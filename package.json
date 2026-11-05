@@ -17,7 +17,12 @@
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"test": "npm run test:unit -- --run",
+		"seed:sicilia": "tsx --env-file=.env.local scripts/seed-sicilia.ts",
+		"ruolo": "tsx --env-file=.env.local scripts/ruolo.ts",
+		"db:avvia": "supabase start -x edge-runtime,vector,logflare,realtime,imgproxy",
+		"db:reset": "supabase db reset",
+		"verifica:permessi": "tsx --env-file=.env.local scripts/verifica-permessi.ts"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^8.0.0",
@@ -25,10 +30,16 @@
 		"@sveltejs/vite-plugin-svelte": "^7.2.0",
 		"prettier": "^3.8.3",
 		"prettier-plugin-svelte": "^4.1.0",
+		"supabase": "^3.0.0",
 		"svelte": "^5.57.2",
 		"svelte-check": "^4.6.0",
+		"tsx": "^4.23.15",
 		"typescript": "^6.0.3",
 		"vite": "^8.3.0",
 		"vitest": "^4.1.8"
+	},
+	"dependencies": {
+		"@supabase/ssr": "^0.12.7",
+		"@supabase/supabase-js": "^2.119.0"
 	}
 }

@@ -1,5 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import PannelloSalva from '#lib/components/editor/PannelloSalva.svelte';
+	import { supabaseBrowser } from '#lib/supabase/browser.ts';
+	import { percorsoFazzolettone, percorsoGruppo } from '#lib/supabase/dati.ts';
+	import type { DatiFazzolettone, Gruppo } from '#lib/supabase/tipi.ts';
 	import FacciaEditor from '#lib/components/editor/FacciaEditor.svelte';
 	import MisuraCm from '#lib/components/editor/MisuraCm.svelte';
 	import { STIMA_COLORI } from '#lib/design/colori.ts';
@@ -10,9 +15,31 @@
 	import { renderDesign } from '#lib/design/render.ts';
 	import { DEFAULT, type Design, type Forma } from '#lib/design/schema.ts';
 
-	const CHIAVE_BOZZA = 'fazzolettoni:bozza';
+	// Contesto: un fazzolettone esistente (?fazzolettone=id) o uno nuovo per un gruppo (?gruppo=id)
+	const idFazzolettone = page.url.searchParams.get('fazzolettone');
+	const idGruppo = page.url.searchParams.get('gruppo');
+	type GruppoBreve = Pick<Gruppo, 'id' | 'nome' | 'associazione' | 'regione_slug' | 'slug'>;
+	let contesto = $state<{ gruppo: GruppoBreve; base: DatiFazzolettone | null } | null>(null);
+	let erroreCaricamento = $state<string | null>(null);
+	let bozzaRipresa = $state(false);
+
+	// Una bozza per ogni fazzolettone, così aprirne un altro non cancella il lavoro
+	const CHIAVE_BOZZA = idFazzolettone
+		? `fazzolettoni:bozza:f:${idFazzolettone}`
+		: idGruppo
+			? `fazzolettoni:bozza:g:${idGruppo}`
+			: 'fazzolettoni:bozza';
+	const leggiBozza = (): { design: Design; nome: string } | null => {
+		try {
+			const s = localStorage.getItem(CHIAVE_BOZZA);
+			return s ? JSON.parse(s) : null;
+		} catch {
+			return null;
+		}
+	};
 
 	function iniziale(): { design: Design; nome: string } {
+		if (idFazzolettone || idGruppo) return { design: nuovoDesign(), nome: '' };
 		const da = page.url.searchParams.get('da');
 		const es = da ? ESEMPI.find((e) => e.id === da) : undefined;
 		if (es) return { design: structuredClone(es.design), nome: es.gruppo };
@@ -32,11 +59,58 @@
 	let design = $state<Design>(partenza.design);
 	let nome = $state(partenza.nome);
 	let lato = $state<'fronte' | 'retro'>('fronte');
+	// Finché il fazzolettone arriva dal database, non salvare bozze
+	let pronto = $state(!idFazzolettone && !idGruppo);
+
+	async function caricaContesto() {
+		const db = supabaseBrowser();
+		const campiGruppo = 'id, nome, associazione, regione_slug, slug';
+		if (idFazzolettone) {
+			const { data } = await db
+				.from('fazzolettoni')
+				.select(`id, rev:revisione_corrente(dati), gruppo:gruppo_id(${campiGruppo})`)
+				.eq('id', idFazzolettone)
+				.maybeSingle();
+			if (!data) return (erroreCaricamento = 'Fazzolettone non trovato');
+			const base = (data.rev as unknown as { dati: DatiFazzolettone }).dati;
+			contesto = { gruppo: data.gruppo as unknown as GruppoBreve, base };
+			design = structuredClone(base.design);
+		} else if (idGruppo) {
+			const { data } = await db.from('gruppi').select(campiGruppo).eq('id', idGruppo).maybeSingle();
+			if (!data) return (erroreCaricamento = 'Gruppo non trovato');
+			contesto = { gruppo: data as GruppoBreve, base: null };
+		}
+		nome = contesto?.gruppo.nome ?? '';
+		const bozza = leggiBozza();
+		if (bozza) {
+			design = bozza.design;
+			bozzaRipresa = true;
+		}
+		pronto = true;
+	}
+	if (idFazzolettone || idGruppo) caricaContesto();
+
+	function scartaBozza() {
+		localStorage.removeItem(CHIAVE_BOZZA);
+		bozzaRipresa = false;
+		design = contesto?.base ? structuredClone(contesto.base.design) : nuovoDesign();
+	}
 
 	// Bozza salvata automaticamente nel browser
 	$effect(() => {
-		localStorage.setItem(CHIAVE_BOZZA, JSON.stringify({ design: $state.snapshot(design), nome }));
+		const snap = { design: $state.snapshot(design), nome };
+		if (pronto) localStorage.setItem(CHIAVE_BOZZA, JSON.stringify(snap));
 	});
+
+	async function salvato(id: string) {
+		localStorage.removeItem(CHIAVE_BOZZA);
+		const { data } = await supabaseBrowser()
+			.from('fazzolettoni')
+			.select('slug, gruppo:gruppo_id(associazione, regione_slug, slug)')
+			.eq('id', id)
+			.single();
+		goto(data ? percorsoFazzolettone(data.gruppo as unknown as Gruppo, data) : '/');
+	}
 
 	const forma = $derived<Forma>(design.forma ?? DEFAULT.forma);
 	const fronte = $derived(renderDesign(design, { faccia: 'fronte', id: 'ed-f' }));
@@ -91,20 +165,41 @@
 </datalist>
 
 <div class="pagina">
-	<header class="barra">
-		<a href="/">← Galleria</a>
-		<input
-			class="nome"
-			type="text"
-			bind:value={nome}
-			placeholder="Nome del gruppo (es. Rosolini 1)"
-		/>
-		<select onchange={(e) => (carica(e.currentTarget.value), (e.currentTarget.value = ''))}>
-			<option value="">Carica un esempio…</option>
-			{#each ESEMPI as e}<option value={e.id}>{e.gruppo}</option>{/each}
-		</select>
-		<button type="button" onclick={nuovo}>Nuovo</button>
-	</header>
+	{#if contesto}
+		<header class="barra">
+			<a href={percorsoGruppo(contesto.gruppo)}>← {contesto.gruppo.nome}</a>
+			<h1>
+				{idFazzolettone ? 'Modifica il fazzolettone' : 'Nuovo fazzolettone'} di {contesto.gruppo
+					.nome}
+			</h1>
+		</header>
+		{#if bozzaRipresa}
+			<p class="bozza">
+				Hai ripreso una bozza non salvata di questo fazzolettone.
+				<button type="button" onclick={scartaBozza}>Scarta la bozza</button>
+			</p>
+		{/if}
+	{:else if erroreCaricamento}
+		<p class="bozza">{erroreCaricamento}</p>
+	{:else if !idFazzolettone && !idGruppo}
+		<header class="barra">
+			<a href="/">← Gruppi</a>
+			<input
+				class="nome"
+				type="text"
+				bind:value={nome}
+				placeholder="Nome del gruppo (es. Rosolini 1)"
+			/>
+			<select onchange={(e) => (carica(e.currentTarget.value), (e.currentTarget.value = ''))}>
+				<option value="">Carica un esempio…</option>
+				{#each ESEMPI as e}<option value={e.id}>{e.gruppo}</option>{/each}
+			</select>
+			<button type="button" onclick={nuovo}>Nuovo</button>
+		</header>
+		<p class="bozza">
+			Editor libero: per salvare nell'archivio apri il fazzolettone dalla pagina del suo gruppo.
+		</p>
+	{/if}
 
 	<div class="layout">
 		<aside class="anteprima">
@@ -137,6 +232,7 @@
 					>
 				{/if}
 			</div>
+			{#if contesto}<a class="vai-salva" href="#salva">Salva nell'archivio ↓</a>{/if}
 		</aside>
 
 		<main class="controlli">
@@ -213,6 +309,18 @@
 				<FacciaEditor bind:faccia={design.fronte} {forma} chiave="fronte" />
 			{/if}
 
+			{#if contesto}
+				<div id="salva">
+					<PannelloSalva
+						design={$state.snapshot(design)}
+						fazzolettoneId={idFazzolettone}
+						gruppoId={contesto.gruppo.id}
+						base={contesto.base}
+						onsalvato={salvato}
+					/>
+				</div>
+			{/if}
+
 			<details class="json">
 				<summary>JSON (avanzato)</summary>
 				<pre>{JSON.stringify(design, null, 2)}</pre>
@@ -248,6 +356,33 @@
 		align-items: center;
 		flex-wrap: wrap;
 		margin-bottom: 0.8rem;
+	}
+	.barra h1 {
+		margin: 0;
+		font-size: 1.15rem;
+	}
+	.vai-salva {
+		color: #2a5db0;
+		font-size: 0.88rem;
+		text-decoration: none;
+	}
+	.bozza {
+		background: #fff1d6;
+		color: #7a4a06;
+		padding: 0.5rem 0.8rem;
+		border-radius: 8px;
+		font-size: 0.88rem;
+		margin: 0 0 0.8rem;
+	}
+	.bozza button {
+		font: inherit;
+		font-size: 0.82rem;
+		margin-left: 0.5rem;
+		padding: 0.15rem 0.6rem;
+		border: 1px solid #e0a640;
+		border-radius: 5px;
+		background: #fff;
+		cursor: pointer;
 	}
 	.barra a {
 		color: #2a5db0;

@@ -185,8 +185,10 @@ function unisciCoppia(
 		const b = sup?.campi[c];
 		const va = vuoto(a) ? null : a!;
 		const vb = vuoto(b) ? null : b!;
-		campi[c] = va ?? vb ?? a ?? b;
-		if (va && vb && !equivalenti(va, vb) && c !== 'gruppo' && c !== 'foto')
+		// Nei testi lunghi la tabella "dettagli" ha perso le lettere accentate: meglio l'altra
+		const testoLibero = c === 'note_storiche' || c === 'precedenti';
+		campi[c] = testoLibero ? (vb ?? va ?? b ?? a) : (va ?? vb ?? a ?? b);
+		if (va && vb && !testoLibero && !equivalenti(va, vb) && c !== 'gruppo' && c !== 'foto')
 			conflitti.push({ campo: c, dettagli: va, supsystic: vb });
 	}
 	// Il nome con l'apostrofo (supsystic) è più fedele

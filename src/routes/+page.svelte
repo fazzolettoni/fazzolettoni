@@ -1,42 +1,65 @@
 <script lang="ts">
-	import Scheda from '#lib/components/Scheda.svelte';
-	import { ESEMPI } from '#lib/design/esempi.ts';
+	import Disegno from '#lib/components/Disegno.svelte';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
+	let cerca = $state('');
+	let associazione = $state('');
+
+	const associazioni = $derived([...new Set(data.gruppi.map((g) => g.associazione))].sort());
+	const visibili = $derived(
+		data.gruppi.filter(
+			(g) =>
+				(!associazione || g.associazione === associazione) &&
+				(!cerca.trim() || g.nome.toLowerCase().includes(cerca.trim().toLowerCase()))
+		)
+	);
 </script>
 
-<svelte:head>
-	<title>Fazzolettoni · fase 0</title>
-</svelte:head>
+<svelte:head><title>Fazzolettoni</title></svelte:head>
 
 <main>
-	<h1>Fazzolettoni · fase 0</h1>
+	<h1>Fazzolettoni dei gruppi scout</h1>
 	<p class="intro">
-		Prova dello schema parametrico e del renderer SVG su {ESEMPI.length} casi reali (AGESCI Sicilia e
-		ScoutWiki). Le trascrizioni sono da verificare sulle fonti; i colori sono stimati dal nome. Ogni scheda
-		ha un editor JSON con anteprima live.
+		Un archivio aperto dei fazzolettoni scout italiani. Chiunque può aggiungere o correggere un
+		gruppo: ogni modifica resta nello storico.
 	</p>
-	<p>
-		<a class="cta" href="/editor">Crea un fazzolettone nell'editor →</a>
-		<a class="cta secondaria" href="/sicilia">Raccolta AGESCI Sicilia →</a>
-	</p>
-	<div class="griglia">
-		{#each ESEMPI as e (e.id)}
-			<Scheda esempio={e} />
-		{/each}
+
+	<div class="filtri">
+		<input type="search" placeholder="Cerca un gruppo…" bind:value={cerca} />
+		<select bind:value={associazione}>
+			<option value="">Tutte le associazioni</option>
+			{#each associazioni as a}<option value={a}>{a.toUpperCase()}</option>{/each}
+		</select>
+		<span class="conta">{visibili.length} gruppi</span>
+		<a class="nuovo" href="/nuovo-gruppo">+ Aggiungi un gruppo</a>
 	</div>
+
+	<ul class="griglia">
+		{#each visibili as g (g.id)}
+			<li>
+				<a href="/{g.associazione}/{g.regione_slug}/{g.slug}">
+					<div class="mini">
+						{#if g.design}<Disegno design={g.design} id="h-{g.id}" />{:else}<div
+								class="vuoto"
+							></div>{/if}
+					</div>
+					<strong>{g.nome}</strong>
+					<span class="meta"
+						>{g.associazione.toUpperCase()} · {g.regione}{#if !g.attivo}
+							· non più attivo{/if}{#if g.n > 1}
+							· {g.n} fazzolettoni{/if}</span
+					>
+					{#if g.daRivedere}<span class="rivedere">da rivedere</span>{/if}
+				</a>
+			</li>
+		{/each}
+	</ul>
 </main>
 
 <style>
-	:global(body) {
-		margin: 0;
-		background: #f4f2ee;
-		font-family:
-			system-ui,
-			-apple-system,
-			sans-serif;
-		color: #222;
-	}
 	main {
-		max-width: 1400px;
+		max-width: 1300px;
 		margin: 0 auto;
 		padding: 1.5rem;
 	}
@@ -45,28 +68,85 @@
 	}
 	.intro {
 		color: #555;
-		max-width: 70ch;
-		margin: 0 0 1.5rem;
+		margin: 0 0 1.2rem;
 	}
-	.cta {
-		display: inline-block;
-		margin-bottom: 1.2rem;
-		padding: 0.5rem 0.9rem;
-		background: #2a5db0;
-		color: #fff;
-		border-radius: 8px;
+	.filtri {
+		display: flex;
+		gap: 0.6rem;
+		align-items: center;
+		flex-wrap: wrap;
+		margin-bottom: 1rem;
+	}
+	input,
+	select {
+		font: inherit;
+		font-size: 0.9rem;
+		padding: 0.4rem 0.6rem;
+		border: 1px solid #ccc;
+		border-radius: 6px;
+		background: #fff;
+	}
+	input {
+		min-width: 16rem;
+	}
+	.conta {
+		color: #888;
+		font-size: 0.85rem;
+	}
+	.nuovo {
+		margin-left: auto;
+		color: #2a5db0;
 		text-decoration: none;
 	}
-	.cta.secondaria {
-		background: #fff;
-		color: #2a5db0;
-		border: 1px solid #2a5db0;
-		margin-left: 0.5rem;
-	}
 	.griglia {
+		list-style: none;
+		padding: 0;
+		margin: 0;
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-		gap: 1rem;
-		align-items: start;
+		grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+		gap: 0.8rem;
+	}
+	.griglia a {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		background: #fff;
+		border: 1px solid #e3e1dc;
+		border-radius: 8px;
+		padding: 0.7rem;
+		text-decoration: none;
+		color: inherit;
+		height: 100%;
+		box-sizing: border-box;
+	}
+	.griglia a:hover {
+		border-color: #2a5db0;
+	}
+	.mini {
+		aspect-ratio: 2 / 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 0.3rem;
+	}
+	.mini :global(.disegno) {
+		width: 100%;
+	}
+	.vuoto {
+		width: 100%;
+		height: 100%;
+		background: #eee;
+		border-radius: 4px;
+	}
+	strong {
+		font-size: 0.92rem;
+	}
+	.meta {
+		font-size: 0.75rem;
+		color: #777;
+	}
+	.rivedere {
+		font-size: 0.7rem;
+		color: #8a5408;
 	}
 </style>

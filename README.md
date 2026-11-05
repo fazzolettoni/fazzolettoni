@@ -17,11 +17,36 @@ Schema parametrico e renderer SVG, provati su 12 casi reali (AGESCI Sicilia e Sc
 - `src/lib/components/editor/`: componenti dell'editor (colore, misura in cm, fettuccia, livelli, elementi, faccia)
 - `scripts/sicilia/estrai.py` → `data/sicilia/grezzi.json` → `src/lib/import/`: import della raccolta AGESCI Sicilia, visibile in `/sicilia` (dati per il PoC privato, non pubblicare)
 
+## Backend (Supabase)
+
+- `supabase/migrations/`: tabelle, regole di accesso e funzioni. Lo storico è append-only: ogni modifica, compreso un ripristino, è una nuova riga in `revisioni`. Si scrive solo tramite funzioni (`salva_gruppo`, `salva_fazzolettone`, `ripristina`, `imposta_ban`, `annulla_utente`…), mai direttamente nelle tabelle.
+- `src/hooks.server.ts`, `src/lib/supabase/`: client, tipi e letture comuni.
+- Pagine: `/` gruppi, `/<associazione>/<regione>/<gruppo>` (fazzolettone attuale e precedenti), `…/<periodo>` (un fazzolettone, `?rev=` per una versione passata), `…/storia`, `…/modifica`, `/nuovo-gruppo`, `/modifiche`, `/moderazione`, `/accedi`, `/profilo`.
+- Gli URL vecchi (gruppo rinominato, date corrette) restano validi come redirect (`slug_storici`).
+
 ## Sviluppo
+
+Serve Docker Desktop avviato.
 
 ```sh
 npm install
-npm run dev      # http://localhost:5173
+npm run db:avvia                 # database locale (il primo avvio scarica le immagini)
+cp .env.example .env.local       # poi incolla i valori di: npx supabase status -o env
+npm run seed:sicilia             # carica le schede siciliane (richiede data/sicilia/grezzi.json)
+npm run dev                      # http://localhost:5173
+```
+
+Le email di accesso in locale non partono: si leggono su http://127.0.0.1:54324. Dopo il primo accesso:
+
+```sh
+npm run ruolo -- tua@email.it amministratore
+```
+
+Altri comandi:
+
+```sh
+npm run db:reset                 # ricrea il database da zero (cancella anche gli utenti)
+npm run verifica:permessi        # controlla le regole di accesso sul database locale
 npm test         # test unitari
 npm run check    # controllo tipi
 ```

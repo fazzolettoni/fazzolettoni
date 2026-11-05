@@ -300,6 +300,12 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 
 - **Fase 0: schema e renderer.** ✅ Prima versione fatta (`src/lib/design/`, galleria in `/`). Schema TypeScript/JSON del `design`, renderer SVG, pagina di prova con 8-10 casi reali: Venezia 2, Rosolini 1, Gibellina 1, Belpasso 2, Solarino 8, Vicari 1, Augusta 4, Catania 19, Siracusa 14 (quadrato), Castellammare 1.
 - **Fase 1: PoC AGESCI Sicilia (privato).** Editor visuale ✅ prima versione (`/editor`). Import della tabella siciliana, pagine di gruppo e fazzolettone, editor con anteprima live, registrazione, revisioni e rollback, export SVG/PNG.
+  Backend ✅ prima versione, in locale con Docker:
+  - accesso via email (magic link), profili con nome pubblico, ruoli;
+  - revisioni append-only, diff leggibili, ripristino, URL stabili con redirect;
+  - moderazione: sospensione, "annulla tutte le modifiche di un utente", ruoli;
+  - le 101 schede siciliane caricate come revisioni "import";
+  - `npm run verifica:permessi` controlla le regole di accesso.
 - **Fase 2: apertura.** Permesso da AGESCI Sicilia, deploy pubblico, asset e foto caricabili, ruoli di moderazione.
 - **Fase 3: ScoutWiki.** Permesso, import AGESCI nazionale come bozze, gestione dei conflitti tra fonti.
 - **Dopo:** fantasie (tartan ecc.), osservati speciali, dataset aperto scaricabile, altre associazioni, 3D.
@@ -317,5 +323,7 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 - [ ] **Bicolore diviso**: la divisione è sempre lungo l'altezza dal vertice (sinistra/destra) o ci sono altre varianti?
 - [ ] **Posizione e livello sono accoppiati**: "adiacente" si riferisce alla fettuccia precedente _nella lista dei livelli_. Quando una fettuccia interna deve stare sopra una esterna (Siracusa 13, Palermo 6: "rossa su gialla"), bisogna usare distanze assolute. Valutare un riferimento esplicito ("adiacente a fettuccia X") o separare ordine di disegno e ordine dall'esterno.
 - [ ] **Fettucce a fantasia** (Trapani 6: fettuccia "tema scozzese"): oggi non rappresentabili.
+- [ ] **Chi può ripristinare**: oggi qualunque utente registrato (come in una wiki); sospensione e annullamento in blocco sono dei moderatori. Da confermare.
+- [ ] **URL del fazzolettone attuale**: oggi ogni fazzolettone ha uno slug di periodo (`dal-1996`, oppure `1` se le date sono ignote) e la pagina del gruppo mostra quello in uso. Quando gli si aggiunge la data di fine, l'URL cambia e il vecchio resta come redirect.
 - [ ] **Licenza del codice**: MIT o AGPL.
 - [ ] **Nome e dominio del progetto.**
