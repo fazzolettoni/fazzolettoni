@@ -15,6 +15,7 @@ Schema parametrico e renderer SVG, provati su 12 casi reali (AGESCI Sicilia e Sc
 - `src/routes/+page.svelte`: galleria con editor JSON live
 - `src/routes/editor/`: editor visuale (`/editor`, oppure `/editor?da=<id-esempio>`), con anteprima live, fettucce come livelli riordinabili, bozza salvata nel browser
 - `src/lib/components/editor/`: componenti dell'editor (colore, misura in cm, fettuccia, livelli, elementi, faccia)
+- `scripts/sicilia/estrai.py` → `data/sicilia/grezzi.json` → `src/lib/import/`: import della raccolta AGESCI Sicilia, visibile in `/sicilia` (dati per il PoC privato, non pubblicare)
 
 ## Sviluppo
 
@@ -23,4 +24,11 @@ npm install
 npm run dev      # http://localhost:5173
 npm test         # test unitari
 npm run check    # controllo tipi
+```
+
+I dati siciliani (`data/sicilia/grezzi.json`) **non sono nel repository**, finché AGESCI Sicilia non dà il permesso. Senza quel file `/sicilia`, l'editor e i test non partono. Per generarlo:
+
+```sh
+curl -sL -o /tmp/sicilia.html https://sicilia.agesci.it/fazzolettoni/
+python3 -I scripts/sicilia/estrai.py /tmp/sicilia.html data/sicilia/grezzi.json
 ```

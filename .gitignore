@@ -21,3 +21,6 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Dati importati da fonti esterne: non versionati finché non c'è il permesso (vedi SPEC §8)
+/data/sicilia/grezzi.json

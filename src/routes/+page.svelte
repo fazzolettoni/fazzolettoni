@@ -14,7 +14,10 @@
 		ScoutWiki). Le trascrizioni sono da verificare sulle fonti; i colori sono stimati dal nome. Ogni scheda
 		ha un editor JSON con anteprima live.
 	</p>
-	<p><a class="cta" href="/editor">Crea un fazzolettone nell'editor →</a></p>
+	<p>
+		<a class="cta" href="/editor">Crea un fazzolettone nell'editor →</a>
+		<a class="cta secondaria" href="/sicilia">Raccolta AGESCI Sicilia →</a>
+	</p>
 	<div class="griglia">
 		{#each ESEMPI as e (e.id)}
 			<Scheda esempio={e} />
@@ -53,6 +56,12 @@
 		color: #fff;
 		border-radius: 8px;
 		text-decoration: none;
+	}
+	.cta.secondaria {
+		background: #fff;
+		color: #2a5db0;
+		border: 1px solid #2a5db0;
+		margin-left: 0.5rem;
 	}
 	.griglia {
 		display: grid;

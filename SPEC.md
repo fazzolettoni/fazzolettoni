@@ -262,6 +262,13 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 - Si importano i dati strutturati della tabella, **senza foto**.
 - Il PoC resta **non pubblico** (in locale o con un deploy protetto da password) e viene mostrato al centro studi AGESCI Sicilia per chiedere il permesso.
 - Se lo danno, il PoC si apre. Altrimenti i dati importati si cancellano.
+- ✅ Fatto (`/sicilia`): `scripts/sicilia/estrai.py` legge la pagina e salva `data/sicilia/grezzi.json`; `src/lib/import/` unisce e converte. 101 fazzolettoni: 79 convertiti senza dubbi, 30 descrizioni libere interpretate a mano (`sicilia-manuali.ts`, con nota visibile), 22 da rivedere.
+- **La pagina ha due tabelle** con gli stessi gruppi e valori a volte diversi: si uniscono campo per campo, "dettagli" come fonte principale, e i disaccordi diventano conflitti visibili (20 gruppi).
+- Identità del gruppo = associazione + nome, confermato dai dati: "Palermo 6" esiste sia AGESCI sia FSE, "Messina 1" e "Giarre 1" sia AGESCI sia CNGEI.
+- Domande da portare ad AGESCI Sicilia:
+  - cosa significa "Presenza sui lati corti: No";
+  - "destra/sinistra" sono viste da chi guarda o da chi indossa;
+  - cosa si intende con "bordura doppia".
 
 ### ScoutWiki (dopo)
 
@@ -305,8 +312,10 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 - [ ] **Fantasie**: come rappresentare tartan e motivi. Pattern parametrico o immagine caricata?
 - [ ] **Zone nel tempo**: basta un campo testuale o serve uno storico delle zone?
 - [ ] **Versioning degli asset**: proposto (file immutabili + versioni), da confermare.
-- [ ] **Dimensioni standard**: decidere la misura di default quando non viene inserita. Oggi il renderer usa 70 cm di cateto per il triangolo (lato lungo ≈ 99 cm) e 70 cm di lato per il quadrato: è un valore provvisorio, da verificare su fazzolettoni reali o presso i fornitori. Il default conta perché le fettucce sono in misure assolute: una fettuccia da 2,5 cm su un fazzolettone più piccolo appare più spessa.
+- [x] **Dimensioni standard**: 70 cm di cateto (lato lungo ≈ 99 cm), confermato dalla raccolta siciliana, dove "70 cm" è il lato corto di gran lunga più frequente (valori tra 45 e 115 cm). Per il quadrato 70 cm di lato resta provvisorio. Il default conta perché le fettucce sono in misure assolute: una fettuccia da 2,5 cm su un fazzolettone più piccolo appare più spessa.
 - [x] **Unità di misura**: tutto in **mm** nei dati, tutto in **cm** (con decimali) nell'interfaccia, perché le fonti usano i cm ("0,4 cm", "2,5 cm").
 - [ ] **Bicolore diviso**: la divisione è sempre lungo l'altezza dal vertice (sinistra/destra) o ci sono altre varianti?
+- [ ] **Posizione e livello sono accoppiati**: "adiacente" si riferisce alla fettuccia precedente _nella lista dei livelli_. Quando una fettuccia interna deve stare sopra una esterna (Siracusa 13, Palermo 6: "rossa su gialla"), bisogna usare distanze assolute. Valutare un riferimento esplicito ("adiacente a fettuccia X") o separare ordine di disegno e ordine dall'esterno.
+- [ ] **Fettucce a fantasia** (Trapani 6: fettuccia "tema scozzese"): oggi non rappresentabili.
 - [ ] **Licenza del codice**: MIT o AGPL.
 - [ ] **Nome e dominio del progetto.**

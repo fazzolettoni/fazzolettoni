@@ -24,5 +24,29 @@ export const STIMA_COLORI: Record<string, string> = {
 	'verde bottiglia': '#0b4a2e',
 	'giallo oro': '#d4a017',
 	oro: '#c9a227',
-	argento: '#c0c0c0'
+	argento: '#c0c0c0',
+	'blu scuro': '#14306b',
+	'blu chiaro': '#6fa8dc',
+	bluette: '#3a5fcd',
+	borgogna: '#800020',
+	'rosso bordeaux': '#7b1e2b',
+	lilla: '#c8a2c8',
+	salmone: '#fa8072'
 };
+
+/** Forme alternative dei nomi (femminile, abbreviazioni) → forma del dizionario. */
+export const SINONIMI_COLORI: Record<string, string> = {
+	rossa: 'rosso',
+	gialla: 'giallo',
+	bianca: 'bianco',
+	nera: 'nero',
+	arancio: 'arancione',
+	grigia: 'grigio',
+	'giallo oro': 'giallo oro'
+};
+
+/** Normalizza un nome di colore scritto a mano ("Rossa", "BLU ") → "rosso", "blu". */
+export function normalizzaNomeColore(nome: string): string {
+	const n = nome.trim().toLowerCase().replace(/\s+/g, ' ');
+	return SINONIMI_COLORI[n] ?? n;
+}
