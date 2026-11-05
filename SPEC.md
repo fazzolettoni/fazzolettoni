@@ -110,7 +110,7 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 ```jsonc
 {
 	"forma": "triangolo", // "triangolo" | "quadrato"
-	"dimensioni_cm": null, // triangolo: { "cateto": 70 } — quadrato: { "lato": 70 }
+	"dimensioni_mm": null, // triangolo: { "cateto": 700 } — quadrato: { "lato": 700 }
 	"fronte": {/* Faccia */},
 	"retro": null // solo per "quadrato"; nel triangolo il retro è il solo colore di fondo
 }
@@ -292,7 +292,7 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 ## 10. Roadmap
 
 - **Fase 0: schema e renderer.** ✅ Prima versione fatta (`src/lib/design/`, galleria in `/`). Schema TypeScript/JSON del `design`, renderer SVG, pagina di prova con 8-10 casi reali: Venezia 2, Rosolini 1, Gibellina 1, Belpasso 2, Solarino 8, Vicari 1, Augusta 4, Catania 19, Siracusa 14 (quadrato), Castellammare 1.
-- **Fase 1: PoC AGESCI Sicilia (privato).** Import della tabella siciliana, pagine di gruppo e fazzolettone, editor con anteprima live, registrazione, revisioni e rollback, export SVG/PNG.
+- **Fase 1: PoC AGESCI Sicilia (privato).** Editor visuale ✅ prima versione (`/editor`). Import della tabella siciliana, pagine di gruppo e fazzolettone, editor con anteprima live, registrazione, revisioni e rollback, export SVG/PNG.
 - **Fase 2: apertura.** Permesso da AGESCI Sicilia, deploy pubblico, asset e foto caricabili, ruoli di moderazione.
 - **Fase 3: ScoutWiki.** Permesso, import AGESCI nazionale come bozze, gestione dei conflitti tra fonti.
 - **Dopo:** fantasie (tartan ecc.), osservati speciali, dataset aperto scaricabile, altre associazioni, 3D.
@@ -305,7 +305,8 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 - [ ] **Fantasie**: come rappresentare tartan e motivi. Pattern parametrico o immagine caricata?
 - [ ] **Zone nel tempo**: basta un campo testuale o serve uno storico delle zone?
 - [ ] **Versioning degli asset**: proposto (file immutabili + versioni), da confermare.
-- [ ] **Dimensioni standard**: esistono misure tipiche (cateto ~70 cm?) da usare come default?
+- [ ] **Dimensioni standard**: decidere la misura di default quando non viene inserita. Oggi il renderer usa 70 cm di cateto per il triangolo (lato lungo ≈ 99 cm) e 70 cm di lato per il quadrato: è un valore provvisorio, da verificare su fazzolettoni reali o presso i fornitori. Il default conta perché le fettucce sono in misure assolute: una fettuccia da 2,5 cm su un fazzolettone più piccolo appare più spessa.
+- [x] **Unità di misura**: tutto in **mm** nei dati, tutto in **cm** (con decimali) nell'interfaccia, perché le fonti usano i cm ("0,4 cm", "2,5 cm").
 - [ ] **Bicolore diviso**: la divisione è sempre lungo l'altezza dal vertice (sinistra/destra) o ci sono altre varianti?
 - [ ] **Licenza del codice**: MIT o AGPL.
 - [ ] **Nome e dominio del progetto.**

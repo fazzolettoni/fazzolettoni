@@ -14,6 +14,7 @@
 		ScoutWiki). Le trascrizioni sono da verificare sulle fonti; i colori sono stimati dal nome. Ogni scheda
 		ha un editor JSON con anteprima live.
 	</p>
+	<p><a class="cta" href="/editor">Crea un fazzolettone nell'editor →</a></p>
 	<div class="griglia">
 		{#each ESEMPI as e (e.id)}
 			<Scheda esempio={e} />
@@ -43,6 +44,15 @@
 		color: #555;
 		max-width: 70ch;
 		margin: 0 0 1.5rem;
+	}
+	.cta {
+		display: inline-block;
+		margin-bottom: 1.2rem;
+		padding: 0.5rem 0.9rem;
+		background: #2a5db0;
+		color: #fff;
+		border-radius: 8px;
+		text-decoration: none;
 	}
 	.griglia {
 		display: grid;

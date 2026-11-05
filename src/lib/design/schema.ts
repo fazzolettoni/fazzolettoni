@@ -79,8 +79,8 @@ export interface Faccia {
 
 export interface Design {
 	forma: Forma | null;
-	/** triangolo: cateto; quadrato: lato. null = misura standard. */
-	dimensioni_cm: { cateto?: number; lato?: number } | null;
+	/** In mm. triangolo: cateto; quadrato: lato. null = misura standard. */
+	dimensioni_mm: { cateto?: number | null; lato?: number | null } | null;
 	fronte: Faccia;
 	/** Solo per il quadrato. Nel triangolo il retro è il solo colore di fondo. null = come il fronte. */
 	retro: Faccia | null;
@@ -89,8 +89,9 @@ export interface Design {
 /** Valori di default usati quando un campo è sconosciuto. */
 export const DEFAULT = {
 	forma: 'triangolo' as Forma,
-	cateto_cm: 70,
-	lato_cm: 70,
+	/** Provvisori: vedi SPEC §11 "Dimensioni standard". */
+	cateto_mm: 700,
+	lato_mm: 700,
 	larghezza_mm: 25,
 	colore_sconosciuto: '#c8c8c8',
 	lati: {

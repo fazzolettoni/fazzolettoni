@@ -73,16 +73,17 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 	}
 	const misura =
 		forma === 'triangolo'
-			? num(design.dimensioni_cm?.cateto, DEFAULT.cateto_cm)
-			: num(design.dimensioni_cm?.lato, DEFAULT.lato_cm);
+			? num(design.dimensioni_mm?.cateto, DEFAULT.cateto_mm)
+			: num(design.dimensioni_mm?.lato, DEFAULT.lato_mm);
 	const sag = sagoma(forma, misura);
 
 	// --- quale faccia disegnare
 	let f: Faccia = design.fronte;
 	let specchia = false;
 	if (faccia === 'retro') {
-		specchia = true;
 		if (forma === 'triangolo') {
+			// Visto da dietro: stesso fondo, con sinistra e destra invertite
+			specchia = true;
 			f = { fondo: design.fronte.fondo, fettucce: [], elementi: [] };
 		} else if (design.retro) {
 			f = design.retro;

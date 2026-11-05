@@ -25,9 +25,9 @@ export interface Sagoma {
 }
 
 /** Costruisce la sagoma in millimetri. Triangolo: lato lungo in alto, vertice in basso. */
-export function sagoma(forma: Forma, misura_cm: number): Sagoma {
+export function sagoma(forma: Forma, misura_mm: number): Sagoma {
 	if (forma === 'triangolo') {
-		const c = misura_cm * 10;
+		const c = misura_mm;
 		const h = c * Math.SQRT2; // ipotenusa
 		const A = { x: 0, y: 0 };
 		const B = { x: h, y: 0 };
@@ -49,7 +49,7 @@ export function sagoma(forma: Forma, misura_cm: number): Sagoma {
 			]
 		};
 	}
-	const l = misura_cm * 10;
+	const l = misura_mm;
 	const p = [
 		{ x: 0, y: 0 },
 		{ x: l, y: 0 },

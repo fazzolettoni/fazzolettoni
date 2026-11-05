@@ -74,6 +74,7 @@
 		<div class="azioni">
 			<button onclick={() => scaricaSvg(render.fronte.svg, esempio.id)}>SVG</button>
 			<button onclick={() => scaricaPng(render.fronte.svg, esempio.id)}>PNG</button>
+			<a class="apri" href="/editor?da={esempio.id}">Apri nell'editor →</a>
 		</div>
 	{/if}
 
@@ -157,6 +158,13 @@
 	.azioni {
 		display: flex;
 		gap: 0.4rem;
+		align-items: center;
+	}
+	.apri {
+		margin-left: auto;
+		font-size: 0.85rem;
+		color: #2a5db0;
+		text-decoration: none;
 	}
 	button {
 		font: inherit;

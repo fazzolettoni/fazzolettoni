@@ -1,3 +1,4 @@
+import { STIMA_COLORI } from './colori';
 import type { Colore, Design, Fettuccia } from './schema';
 
 /**
@@ -17,22 +18,11 @@ export interface Esempio {
 	design: Design;
 }
 
-/** Dizionario minimo nome → hex indicativo, usato solo per i dati importati. */
-const STIMA: Record<string, string> = {
-	azzurro: '#3d8fd1',
-	celeste: '#8fcbea',
-	blu: '#1d3f8f',
-	bianco: '#ffffff',
-	giallo: '#f5c400',
-	verde: '#1f8a3b',
-	'verde bandiera': '#009246',
-	rosso: '#d0201a',
-	nero: '#1a1a1a',
-	grigio: '#8a8d91',
-	amaranto: '#9f1d35'
-};
-
-const col = (nome: string): Colore => ({ nome, hex: STIMA[nome] ?? null, approssimato: true });
+const col = (nome: string): Colore => ({
+	nome,
+	hex: STIMA_COLORI[nome] ?? null,
+	approssimato: true
+});
 const ignoto = (nome: string | null = null): Colore => ({ nome, hex: null });
 
 const SICILIA = { tipo: 'agesci-sicilia', url: 'https://sicilia.agesci.it/fazzolettoni/' };
@@ -58,13 +48,13 @@ const tri = (
 	elementi: Design['fronte']['elementi'] = []
 ): Design => ({
 	forma: 'triangolo',
-	dimensioni_cm: null,
+	dimensioni_mm: null,
 	fronte: { fondo, fettucce, elementi },
 	retro: null
 });
 const quad = (fondo: Design['fronte']['fondo'], fettucce: Fettuccia[]): Design => ({
 	forma: 'quadrato',
-	dimensioni_cm: null,
+	dimensioni_mm: null,
 	fronte: { fondo, fettucce, elementi: [] },
 	retro: null
 });
