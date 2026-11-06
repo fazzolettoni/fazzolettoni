@@ -13,7 +13,7 @@
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
 	import { cambiaForma, nuovoDesign } from '#lib/design/nuovo.ts';
 	import { renderDesign } from '#lib/design/render.ts';
-	import { DEFAULT, type Design, type Forma } from '#lib/design/schema.ts';
+	import { DEFAULT, normalizzaDesign, type Design, type Forma } from '#lib/design/schema.ts';
 
 	// Contesto: un fazzolettone esistente (?fazzolettone=id) o uno nuovo per un gruppo (?gruppo=id)
 	const idFazzolettone = page.url.searchParams.get('fazzolettone');
@@ -56,7 +56,7 @@
 	}
 
 	const partenza = iniziale();
-	let design = $state<Design>(partenza.design);
+	let design = $state<Design>(normalizzaDesign(partenza.design));
 	let nome = $state(partenza.nome);
 	let lato = $state<'fronte' | 'retro'>('fronte');
 	// Finché il fazzolettone arriva dal database, non salvare bozze
@@ -74,7 +74,7 @@
 			if (!data) return (erroreCaricamento = 'Fazzolettone non trovato');
 			const base = (data.rev as unknown as { dati: DatiFazzolettone }).dati;
 			contesto = { gruppo: data.gruppo as unknown as GruppoBreve, base };
-			design = structuredClone(base.design);
+			design = normalizzaDesign(base.design);
 		} else if (idGruppo) {
 			const { data } = await db.from('gruppi').select(campiGruppo).eq('id', idGruppo).maybeSingle();
 			if (!data) return (erroreCaricamento = 'Gruppo non trovato');
@@ -83,7 +83,7 @@
 		nome = contesto?.gruppo.nome ?? '';
 		const bozza = leggiBozza();
 		if (bozza) {
-			design = bozza.design;
+			design = normalizzaDesign(bozza.design);
 			bozzaRipresa = true;
 		}
 		pronto = true;
@@ -93,7 +93,7 @@
 	function scartaBozza() {
 		localStorage.removeItem(CHIAVE_BOZZA);
 		bozzaRipresa = false;
-		design = contesto?.base ? structuredClone(contesto.base.design) : nuovoDesign();
+		design = contesto?.base ? normalizzaDesign(contesto.base.design) : nuovoDesign();
 	}
 
 	// Bozza salvata automaticamente nel browser
@@ -148,7 +148,7 @@
 	let erroreJson = $state<string | null>(null);
 	function importaJson() {
 		try {
-			design = JSON.parse(testoJson);
+			design = normalizzaDesign(JSON.parse(testoJson));
 			erroreJson = null;
 		} catch (e) {
 			erroreJson = (e as Error).message;

@@ -5,15 +5,27 @@ import { ESEMPI } from './esempi';
 import type { Design } from './schema';
 
 describe('geometria', () => {
-	it('il quadrato rientrato di 10 mm su tutti i lati è un quadrato più piccolo', () => {
-		const s = sagoma('quadrato', 100);
+	it('il quadrato è a rombo e rientra di 10 mm su tutti i lati', () => {
+		const s = sagoma('quadrato', 100); // diagonale ≈ 141 mm
+		expect(s.punti.map((q) => [Math.round(q.x), Math.round(q.y)])).toEqual([
+			[0, 71],
+			[71, 0],
+			[141, 71],
+			[71, 141]
+		]);
 		const p = rientra(s, [10, 10, 10, 10]);
 		expect(p.map((q) => [Math.round(q.x), Math.round(q.y)])).toEqual([
-			[10, 10],
-			[90, 10],
-			[90, 90],
-			[10, 90]
+			[14, 71],
+			[71, 14],
+			[127, 71],
+			[71, 127]
 		]);
+	});
+
+	it('il quadrato diviso separa il triangolo sinistro da quello destro', () => {
+		const [sx, dx] = sagoma('quadrato', 100).meta;
+		expect(Math.max(...sx.map((p) => p.x))).toBeCloseTo(70.71, 1);
+		expect(Math.min(...dx.map((p) => p.x))).toBeCloseTo(70.71, 1);
 	});
 
 	it('il triangolo ha il lato lungo in alto e il vertice in basso', () => {
@@ -25,6 +37,31 @@ describe('geometria', () => {
 });
 
 describe('renderDesign', () => {
+	it('i nomi vecchi dei lati del quadrato danno lo stesso disegno', () => {
+		const design = (lati: string[]) =>
+			({
+				forma: 'quadrato',
+				dimensioni_mm: null,
+				fronte: {
+					fondo: { tipo: 'tinta_unita', colori: [{ hex: '#123456', nome: 'blu' }] },
+					fettucce: [
+						{
+							colori: [{ hex: '#ffffff', nome: 'bianco' }],
+							larghezza_mm: 20,
+							distanza_bordo_mm: 0,
+							lati,
+							incrocio: 'angolo'
+						}
+					],
+					elementi: []
+				},
+				retro: null
+			}) as unknown as Design;
+		expect(renderDesign(design(['alto', 'destra', 'basso', 'sinistra'])).svg).toBe(
+			renderDesign(design(['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx'])).svg
+		);
+	});
+
 	it('disegna tutti gli esempi, fronte e retro, senza errori', () => {
 		for (const e of ESEMPI) {
 			for (const faccia of ['fronte', 'retro'] as const) {

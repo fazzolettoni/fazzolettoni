@@ -1,6 +1,7 @@
 import { bandaDritta, percorso, rettangoloTratto, rientra, sagoma, type Sagoma } from './geometria';
 import {
 	DEFAULT,
+	normalizzaLati,
 	type Colore,
 	type Design,
 	type Faccia,
@@ -245,7 +246,7 @@ function latiValidi(fet: Fettuccia, sag: Sagoma, nome: string, avvisi: string[])
 		avvisi.push(`${nome}: lati sconosciuti, uso quelli standard`);
 		return DEFAULT.lati[sag.forma];
 	}
-	const ok = fet.lati.filter((l) => possibili.includes(l));
+	const ok = normalizzaLati(fet.lati, sag.forma).filter((l) => possibili.includes(l));
 	if (ok.length < fet.lati.length)
 		avvisi.push(`${nome}: alcuni lati non esistono per questa forma`);
 	return ok;

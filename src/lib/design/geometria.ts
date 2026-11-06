@@ -24,7 +24,10 @@ export interface Sagoma {
 	meta: [P[], P[]];
 }
 
-/** Costruisce la sagoma in millimetri. Triangolo: lato lungo in alto, vertice in basso. */
+/**
+ * Costruisce la sagoma in millimetri.
+ * Triangolo: lato lungo in alto, vertice in basso. Quadrato: a rombo (ruotato di 45°).
+ */
 export function sagoma(forma: Forma, misura_mm: number): Sagoma {
 	if (forma === 'triangolo') {
 		const c = misura_mm;
@@ -49,27 +52,27 @@ export function sagoma(forma: Forma, misura_mm: number): Sagoma {
 			]
 		};
 	}
-	const l = misura_mm;
-	const p = [
-		{ x: 0, y: 0 },
-		{ x: l, y: 0 },
-		{ x: l, y: l },
-		{ x: 0, y: l }
-	];
+	// Quadrato: sempre ruotato di 45° (a rombo), con un vertice in alto e uno in basso.
+	// Il fondo diviso separa il triangolo sinistro da quello destro, lungo la diagonale verticale.
+	const d = misura_mm * Math.SQRT2; // diagonale
+	const S = { x: 0, y: d / 2 };
+	const T = { x: d / 2, y: 0 };
+	const D = { x: d, y: d / 2 };
+	const B = { x: d / 2, y: d };
 	return {
 		forma,
-		punti: p,
+		punti: [S, T, D, B],
 		bordi: [
-			{ lato: 'alto', a: p[0], b: p[1], origine: 'a' },
-			{ lato: 'destra', a: p[1], b: p[2], origine: 'a' },
-			{ lato: 'basso', a: p[2], b: p[3], origine: 'a' },
-			{ lato: 'sinistra', a: p[3], b: p[0], origine: 'a' }
+			{ lato: 'alto_sx', a: S, b: T, origine: 'b' },
+			{ lato: 'alto_dx', a: T, b: D, origine: 'a' },
+			{ lato: 'basso_dx', a: D, b: B, origine: 'b' },
+			{ lato: 'basso_sx', a: B, b: S, origine: 'a' }
 		],
-		larghezza: l,
-		altezza: l,
+		larghezza: d,
+		altezza: d,
 		meta: [
-			[p[0], { x: l / 2, y: 0 }, { x: l / 2, y: l }, p[3]],
-			[{ x: l / 2, y: 0 }, p[1], p[2], { x: l / 2, y: l }]
+			[T, B, S],
+			[T, D, B]
 		]
 	};
 }

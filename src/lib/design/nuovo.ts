@@ -15,15 +15,15 @@ export const ETICHETTE_LATI: Record<Lato, string> = {
 	corto_sx: 'corto sinistro',
 	corto_dx: 'corto destro',
 	lungo: 'lungo',
-	alto: 'alto',
-	destra: 'destra',
-	basso: 'basso',
-	sinistra: 'sinistra'
+	alto_sx: 'in alto a sinistra',
+	alto_dx: 'in alto a destra',
+	basso_dx: 'in basso a destra',
+	basso_sx: 'in basso a sinistra'
 };
 
 export const LATI_PER_FORMA: Record<Forma, Lato[]> = {
 	triangolo: ['corto_sx', 'corto_dx', 'lungo'],
-	quadrato: ['alto', 'destra', 'basso', 'sinistra']
+	quadrato: ['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx']
 };
 
 export const nuovoColore = (hex: string | null = null, nome: string | null = null): Colore => ({

@@ -12,7 +12,7 @@ import { colore } from './sicilia';
 import type { Design, Elemento, Fettuccia, Lato } from '../design/schema';
 
 const CORTI: Lato[] = ['corto_sx', 'corto_dx'];
-const QUATTRO: Lato[] = ['alto', 'destra', 'basso', 'sinistra'];
+const QUATTRO: Lato[] = ['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx'];
 
 function f(
 	colori: string | string[],

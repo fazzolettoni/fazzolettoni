@@ -9,8 +9,8 @@ export type Forma = 'triangolo' | 'quadrato';
 
 /** Lati del triangolo: il lato lungo sta in alto, il vertice in basso. */
 export type LatoTriangolo = 'corto_sx' | 'corto_dx' | 'lungo';
-/** Lati del quadrato, in senso orario dall'alto. */
-export type LatoQuadrato = 'alto' | 'destra' | 'basso' | 'sinistra';
+/** Lati del quadrato, che si disegna a rombo: in senso orario dal vertice sinistro. */
+export type LatoQuadrato = 'alto_sx' | 'alto_dx' | 'basso_dx' | 'basso_sx';
 export type Lato = LatoTriangolo | LatoQuadrato;
 
 export interface Colore {
@@ -96,6 +96,46 @@ export const DEFAULT = {
 	colore_sconosciuto: '#c8c8c8',
 	lati: {
 		triangolo: ['corto_sx', 'corto_dx'] as Lato[],
-		quadrato: ['alto', 'destra', 'basso', 'sinistra'] as Lato[]
+		// come i lati corti del triangolo: quelli che si vedono quando è piegato
+		quadrato: ['basso_sx', 'basso_dx'] as Lato[]
 	}
 };
+
+/**
+ * Nomi usati prima che il quadrato fosse disegnato a rombo. Le revisioni salvate non si
+ * riscrivono (sono immutabili): si traducono quando si leggono.
+ */
+const LATI_VECCHI: Record<string, Lato> = {
+	alto: 'alto_sx',
+	destra: 'alto_dx',
+	basso: 'basso_dx',
+	sinistra: 'basso_sx'
+};
+
+/**
+ * Un quadrato si indossa piegato lungo la diagonale orizzontale: il triangolo che si vede ha
+ * come "lati corti" i due lati in basso del rombo. Così le descrizioni "sui lati corti" valgono
+ * anche per i quadrati. Il "lato lungo" (la piega) sul quadrato non esiste.
+ */
+const LATI_CORTI_SU_QUADRATO: Record<string, Lato | null> = {
+	corto_sx: 'basso_sx',
+	corto_dx: 'basso_dx',
+	lungo: null
+};
+
+/** Traduce i nomi vecchi e quelli del triangolo nei lati della forma indicata. */
+export function normalizzaLati(lati: string[], forma: Forma | null): Lato[] {
+	const out = lati.map((l) => LATI_VECCHI[l] ?? (l as Lato));
+	if (forma !== 'quadrato') return out;
+	return out
+		.map((l) => (l in LATI_CORTI_SU_QUADRATO ? LATI_CORTI_SU_QUADRATO[l] : l))
+		.filter((l): l is Lato => !!l);
+}
+
+/** Porta un design salvato con convenzioni vecchie a quelle attuali (copia). */
+export function normalizzaDesign(d: Design): Design {
+	const c = structuredClone(d);
+	for (const f of [c.fronte, c.retro])
+		for (const fet of f?.fettucce ?? []) if (fet.lati) fet.lati = normalizzaLati(fet.lati, c.forma);
+	return c;
+}

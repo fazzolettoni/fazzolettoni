@@ -262,7 +262,7 @@ export function lati(
 	const t = (g.campi.lati_corti ?? '').toLowerCase();
 	if (vuoto(t)) return null;
 	if (/4 lati|tutti/.test(t)) {
-		if (f === 'quadrato') return [...DEFAULT.lati.quadrato];
+		if (f === 'quadrato') return ['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx'];
 		note.push('"tutti i lati" su un triangolo: lati corti e lato lungo');
 		return ['corto_sx', 'corto_dx', 'lungo'];
 	}

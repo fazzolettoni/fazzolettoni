@@ -40,7 +40,7 @@ const fet = (f: Partial<Fettuccia> & Pick<Fettuccia, 'colori'>): Fettuccia => ({
 });
 
 const CORTI: Fettuccia['lati'] = ['corto_sx', 'corto_dx'];
-const QUATTRO: Fettuccia['lati'] = ['alto', 'destra', 'basso', 'sinistra'];
+const QUATTRO: Fettuccia['lati'] = ['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx'];
 
 const tri = (
 	fondo: Design['fronte']['fondo'],

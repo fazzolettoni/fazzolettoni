@@ -11,6 +11,7 @@ import {
 	type RigaGrezza
 } from './sicilia';
 import { MANUALI } from './sicilia-manuali';
+import { normalizzaDesign } from '../design/schema';
 
 export interface SchedaSicilia {
 	gruppo: GruppoSicilia;
@@ -23,7 +24,13 @@ export const FONTE_SICILIA = {
 	curatore: grezzi.curatore
 };
 
+/** Converte e porta i lati alla forma giusta (es. "lati corti" di un quadrato). */
 export function converti(g: GruppoSicilia): Conversione {
+	const c = convertiGrezzo(g);
+	return { ...c, design: normalizzaDesign(c.design) };
+}
+
+function convertiGrezzo(g: GruppoSicilia): Conversione {
 	const base = convertiConRegole(g);
 	const m = MANUALI[g.id];
 	if (!m || (m.coloreBase && g.campi.colore_base?.toLowerCase() !== m.coloreBase)) return base;

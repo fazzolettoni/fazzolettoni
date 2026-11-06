@@ -119,7 +119,10 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 ### Forme
 
 - **Triangolo** (il caso di gran lunga più comune): triangolo isoscele. Il fronte è decorato e il **retro mostra solo il colore di fondo**. Lati: `corto_sx`, `corto_dx`, `lungo`.
-- **Quadrato**: si piega in diagonale quando si indossa. **Fronte e retro sono indipendenti.** Lati: `alto`, `destra`, `basso`, `sinistra`.
+- **Quadrato**: si disegna **sempre ruotato di 45°, a rombo**, con un vertice in alto e uno in basso. **Fronte e retro sono indipendenti.** Lati: `alto_sx`, `alto_dx`, `basso_dx`, `basso_sx`.
+  - Il fondo **diviso** separa il triangolo sinistro da quello destro, lungo la diagonale verticale.
+  - Si indossa piegato lungo la diagonale orizzontale: il triangolo che si vede ha come "lati corti" i due lati in basso. Per questo una fettuccia "sui lati corti" di un quadrato va su `basso_sx` e `basso_dx`, che sono anche il default. _Da confermare._
+  - I dati salvati con i nomi vecchi (`alto`, `destra`, …) o con i lati del triangolo vengono tradotti quando si leggono, perché le revisioni non si riscrivono.
 
 ### Faccia
 
