@@ -57,3 +57,23 @@ I dati siciliani (`data/sicilia/grezzi.json`) **non sono nel repository**, finch
 curl -sL -o /tmp/sicilia.html https://sicilia.agesci.it/fazzolettoni/
 python3 -I scripts/sicilia/estrai.py /tmp/sicilia.html data/sicilia/grezzi.json
 ```
+
+## Messa online (alpha)
+
+Sito su Vercel, database su un progetto Supabase gratuito. Con `ALPHA_PASSWORD` impostata, tutto il sito chiede una password: i dati AGESCI Sicilia restano visibili solo a chi la conosce.
+
+1. **Supabase**: crea un progetto su supabase.com (regione Europa). Poi, da terminale:
+   ```bash
+   npx supabase login
+   npx supabase link --project-ref <ref-del-progetto>
+   npx supabase db push
+   ```
+2. **Vercel**: importa il repository da vercel.com (accesso con GitHub) e imposta le variabili `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_PUBLISHABLE_KEY` e `ALPHA_PASSWORD` (Settings → Environment Variables). Ogni push su `main` pubblica una nuova versione.
+3. **Supabase → Authentication → URL Configuration**: _Site URL_ = l'indirizzo Vercel, e tra i _Redirect URLs_ `https://<indirizzo-vercel>/**`.
+4. **Dati Sicilia** (facoltativo): crea `.env.produzione` (ignorato da git) con `PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` del progetto online, poi:
+   ```bash
+   npx tsx --env-file=.env.produzione scripts/seed-sicilia.ts
+   ```
+5. **Amministratore**: accedi al sito, poi `npx tsx --env-file=.env.produzione scripts/ruolo.ts <email> amministratore`.
+
+Le email di accesso del servizio integrato di Supabase arrivano solo agli indirizzi del team del progetto e con un limite orario basso: per aprire la alpha ad altri serve un SMTP proprio (es. Resend), da impostare in Authentication → Emails.
