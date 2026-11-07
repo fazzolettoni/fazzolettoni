@@ -5,18 +5,16 @@
 
 	/**
 	 * Immagine fissa del fazzolettone indossato, generata quando entra nello schermo con il
-	 * renderer condiviso. Ogni gruppo ha una sua leggera rotazione, sempre la stessa. I quadrati
-	 * (per ora senza modello) e gli errori ripiegano sul disegno piatto.
+	 * renderer condiviso. Ogni gruppo ha una sua leggera rotazione, sempre la stessa. Se qualcosa
+	 * va storto si ripiega sul disegno piatto.
 	 */
 	let { design, id }: { design: Design; id: string } = $props();
 
 	let elemento: HTMLDivElement;
 	let src = $state<string | null>(null);
 	let fallito = $state(false);
-	const triangolo = $derived((design.forma ?? 'triangolo') === 'triangolo');
 
 	onMount(() => {
-		if (!triangolo) return;
 		let attivo = true;
 		let url: string | null = null;
 		const oss = new IntersectionObserver(
@@ -44,7 +42,7 @@
 </script>
 
 <div class="mini3d" bind:this={elemento}>
-	{#if !triangolo || fallito}
+	{#if fallito}
 		<div class="piano"><Disegno {design} id="m-{id}" /></div>
 	{:else if src}
 		<img {src} alt="" />

@@ -35,7 +35,7 @@
 		</div>
 		<nav>
 			<a href="{base}/modifica">Modifica gruppo</a>
-			<a href="{base}/storia">Storia del gruppo</a>
+			<a href="{base}/storico">Storico del gruppo</a>
 		</nav>
 	</header>
 
@@ -48,7 +48,7 @@
 				</h2>
 				<nav>
 					<a class="bottone" href="/editor?fazzolettone={f.id}">Modifica</a>
-					<a href="{percorsoFazzolettone(g, f)}/storia">Storia</a>
+					<a href="{percorsoFazzolettone(g, f)}/storico">Storico</a>
 					<a href={percorsoFazzolettone(g, f)}>Link</a>
 				</nav>
 			</div>

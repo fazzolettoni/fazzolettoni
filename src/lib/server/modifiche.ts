@@ -10,7 +10,7 @@ export interface Modifica {
 	commento: string | null;
 	autore: { id: string; nome: string; bannato: boolean } | null;
 	autore_nome: string | null;
-	/** Cosa è stato modificato, con il link alla pagina e alla storia. */
+	/** Cosa è stato modificato, con il link alla pagina e allo storico. */
 	titolo: string;
 	percorso: string | null;
 }

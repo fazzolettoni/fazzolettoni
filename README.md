@@ -21,7 +21,7 @@ Schema parametrico e renderer SVG, provati su 12 casi reali (AGESCI Sicilia e Sc
 
 - `supabase/migrations/`: tabelle, regole di accesso e funzioni. Lo storico è append-only: ogni modifica, compreso un ripristino, è una nuova riga in `revisioni`. Si scrive solo tramite funzioni (`salva_gruppo`, `salva_fazzolettone`, `ripristina`, `imposta_ban`, `annulla_utente`…), mai direttamente nelle tabelle.
 - `src/hooks.server.ts`, `src/lib/supabase/`: client, tipi e letture comuni.
-- Pagine: `/` gruppi, `/<associazione>/<regione>/<gruppo>` (fazzolettone attuale e precedenti), `…/<periodo>` (un fazzolettone, `?rev=` per una versione passata), `…/storia`, `…/modifica`, `/nuovo-gruppo`, `/modifiche`, `/moderazione`, `/accedi`, `/profilo`.
+- Pagine: `/` gruppi, `/<associazione>/<regione>/<gruppo>` (fazzolettone attuale e precedenti), `…/<periodo>` (un fazzolettone, `?rev=` per una versione passata), `…/storico`, `…/modifica`, `/nuovo-gruppo`, `/modifiche`, `/moderazione`, `/accedi`, `/profilo`.
 - Gli URL vecchi (gruppo rinominato, date corrette) restano validi come redirect (`slug_storici`).
 
 ## Sviluppo

@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 			locals.supabase,
 			`${params.associazione}/${params.regione}/${params.gruppo}/${params.periodo}`
 		);
-		if (nuovo) redirect(301, `${nuovo}/storia${url.search}`);
+		if (nuovo) redirect(301, `${nuovo}/storico${url.search}`);
 		error(404, 'Fazzolettone non trovato');
 	}
 	return {

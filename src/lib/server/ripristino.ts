@@ -3,8 +3,8 @@ import { percorsoFazzolettone, percorsoGruppo } from '#lib/supabase/dati.ts';
 import type { Gruppo } from '#lib/supabase/tipi.ts';
 
 /**
- * Azione comune "ripristina questa versione" per le pagine di storia.
- * Il ripristino può cambiare l'URL (date o nome diversi): si torna alla storia all'indirizzo nuovo.
+ * Azione comune "ripristina questa versione" per le pagine dello storico.
+ * Il ripristino può cambiare l'URL (date o nome diversi): si torna allo storico all'indirizzo nuovo.
  */
 export async function azioneRipristina({ request, locals, url }: RequestEvent) {
 	if (!locals.utente) redirect(303, `/accedi?poi=${encodeURIComponent(url.pathname)}`);
@@ -23,12 +23,12 @@ export async function azioneRipristina({ request, locals, url }: RequestEvent) {
 	if (f)
 		redirect(
 			303,
-			`${percorsoFazzolettone(f.gruppo as unknown as Gruppo, f)}/storia?ripristinata=${revisione}`
+			`${percorsoFazzolettone(f.gruppo as unknown as Gruppo, f)}/storico?ripristinata=${revisione}`
 		);
 	const { data: g } = await locals.supabase
 		.from('gruppi')
 		.select('associazione, regione_slug, slug')
 		.eq('id', id)
 		.maybeSingle();
-	redirect(303, g ? `${percorsoGruppo(g)}/storia?ripristinata=${revisione}` : '/');
+	redirect(303, g ? `${percorsoGruppo(g)}/storico?ripristinata=${revisione}` : '/');
 }

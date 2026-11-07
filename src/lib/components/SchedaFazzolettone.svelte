@@ -14,7 +14,6 @@
 
 	const avvisi = $derived(renderDesign(dati.design, { id: `${id}-av` }).avvisi);
 	const quadrato = $derived(dati.design.forma === 'quadrato');
-	let vista3d = $state(false);
 	const originali = $derived(
 		Object.entries(dati.dati_originali ?? {}).filter(
 			([k, v]) => v && !['gruppo', 'foto', 'associazione', 'note_storiche'].includes(k)
@@ -24,28 +23,27 @@
 
 <section class="scheda">
 	{#if titolo}<h2>{titolo}</h2>{/if}
-	<div class="facce" class:quadrato>
-		<figure class="fronte"><Disegno design={dati.design} id="{id}-f" /></figure>
-		<figure class="retro">
-			<Disegno design={dati.design} faccia="retro" id="{id}-r" />
-			<figcaption>retro</figcaption>
-		</figure>
-	</div>
-
-	{#if vista3d}
+	<div class="visuale">
+		<!-- three.js si scarica a parte, solo nelle pagine che lo mostrano -->
 		<div class="tre">
 			{#await import('./Fazzolettone3D.svelte') then m}
 				<m.default design={dati.design} />
 			{/await}
+			<span class="aiuto">trascina per ruotare · rotella per lo zoom</span>
 		</div>
-	{/if}
+		<div class="facce" class:quadrato>
+			<figure class="fronte">
+				<Disegno design={dati.design} id="{id}-f" />
+				<figcaption>fronte, steso</figcaption>
+			</figure>
+			<figure class="retro">
+				<Disegno design={dati.design} faccia="retro" id="{id}-r" />
+				<figcaption>retro</figcaption>
+			</figure>
+		</div>
+	</div>
 
 	<div class="azioni">
-		{#if !quadrato}
-			<button type="button" aria-pressed={vista3d} onclick={() => (vista3d = !vista3d)}
-				>{vista3d ? 'Chiudi 3D' : '3D'}</button
-			>
-		{/if}
 		<button
 			type="button"
 			onclick={() => scaricaSvg(renderDesign(dati.design, { id: 'x' }).svg, nomeFile)}>SVG</button
@@ -105,12 +103,33 @@
 </section>
 
 <style>
+	.visuale {
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		gap: 1rem;
+		align-items: center;
+	}
+	@media (max-width: 700px) {
+		.visuale {
+			grid-template-columns: 1fr;
+		}
+	}
 	.tre {
-		height: min(70vh, 560px);
+		position: relative;
+		height: min(65vh, 520px);
 		background: #ece9e3;
 		border-radius: 10px;
 		overflow: hidden;
-		margin: 0.6rem 0;
+	}
+	.aiuto {
+		position: absolute;
+		bottom: 0.4rem;
+		left: 0;
+		right: 0;
+		text-align: center;
+		font-size: 0.7rem;
+		color: #888;
+		pointer-events: none;
 	}
 	.scheda {
 		display: flex;
@@ -123,22 +142,24 @@
 	}
 	.facce {
 		display: flex;
+		flex-direction: column;
 		gap: 1rem;
-		align-items: flex-start;
+		align-items: center;
 	}
 	figure {
 		margin: 0;
 		text-align: center;
 	}
 	.fronte {
-		flex: 3;
+		width: 100%;
 	}
 	.retro {
-		flex: 1.2;
+		width: 45%;
 		opacity: 0.85;
 	}
+	.quadrato .fronte,
 	.quadrato .retro {
-		flex: 1.6;
+		width: 60%;
 	}
 	figcaption {
 		font-size: 0.72rem;

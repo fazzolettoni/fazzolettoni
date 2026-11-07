@@ -20,13 +20,13 @@
 		<h1>{g.nome} <span>{testoPeriodo(f)}</span></h1>
 		<nav>
 			<a class="bottone" href="/editor?fazzolettone={f.id}">Modifica</a>
-			<a href="{base}/storia">Storia</a>
+			<a href="{base}/storico">Storico</a>
 		</nav>
 	</header>
 	{#if data.versione}
 		<p class="vecchia">
 			Stai vedendo una versione del {new Date(data.versione.creata_il).toLocaleString('it-IT')}.
-			<a href={base}>Vai alla versione attuale</a> · <a href="{base}/storia">storia</a>
+			<a href={base}>Vai alla versione attuale</a> · <a href="{base}/storico">storico</a>
 		</p>
 	{/if}
 	<article>

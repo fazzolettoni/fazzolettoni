@@ -22,7 +22,7 @@
 					{:else}{m.autore_nome ?? '—'}{/if}
 				</td>
 				<td>
-					{#if m.percorso}<a href="{m.percorso}/storia">storia</a>{/if}
+					{#if m.percorso}<a href="{m.percorso}/storico">storico</a>{/if}
 				</td>
 			</tr>
 		{:else}

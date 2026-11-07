@@ -85,8 +85,9 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 	let specchia = false;
 	if (faccia === 'retro') {
 		if (forma === 'triangolo') {
-			// Visto da dietro: stesso fondo, con sinistra e destra invertite
-			specchia = true;
+			// Visto da dietro: stesso fondo, con sinistra e destra invertite. Nelle texture no:
+			// lì le coordinate sono quelle del tessuto, uguali sulle due facce.
+			specchia = !opzioni.texture;
 			f = { fondo: design.fronte.fondo, fettucce: [], elementi: [] };
 		} else if (design.retro) {
 			f = design.retro;

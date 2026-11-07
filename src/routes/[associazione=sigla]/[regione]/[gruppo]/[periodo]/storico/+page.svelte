@@ -9,14 +9,14 @@
 	const f = $derived(data.fazzolettone);
 </script>
 
-<svelte:head><title>Storia · {g.nome} · Fazzolettoni</title></svelte:head>
+<svelte:head><title>Storico · {g.nome} · Fazzolettoni</title></svelte:head>
 
 <main>
 	<p class="briciole">
 		<a href="/">Gruppi</a> › <a href={percorsoGruppo(g)}>{g.nome}</a> ›
-		<a href={percorsoFazzolettone(g, f)}>{testoPeriodo(f)}</a> › storia
+		<a href={percorsoFazzolettone(g, f)}>{testoPeriodo(f)}</a> › storico
 	</p>
-	<h1>Storia delle modifiche</h1>
+	<h1>Storico delle modifiche</h1>
 	{#if form?.errore}<p class="errore">{form.errore}</p>{/if}
 	{#if page.url.searchParams.get('ripristinata')}
 		<p class="ok">Ripristinata la versione {page.url.searchParams.get('ripristinata')}.</p>

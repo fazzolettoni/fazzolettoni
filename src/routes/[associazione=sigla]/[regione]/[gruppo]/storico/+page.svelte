@@ -8,15 +8,15 @@
 	const g = $derived(data.gruppo);
 </script>
 
-<svelte:head><title>Storia · {g.nome} · Fazzolettoni</title></svelte:head>
+<svelte:head><title>Storico · {g.nome} · Fazzolettoni</title></svelte:head>
 
 <main>
 	<p class="briciole">
-		<a href="/">Gruppi</a> › <a href={percorsoGruppo(g)}>{g.nome}</a> › storia del gruppo
+		<a href="/">Gruppi</a> › <a href={percorsoGruppo(g)}>{g.nome}</a> › storico del gruppo
 	</p>
-	<h1>Storia del gruppo</h1>
+	<h1>Storico del gruppo</h1>
 	<p class="nota">
-		Nome, regione, zona e link. Le modifiche ai fazzolettoni hanno una storia propria.
+		Nome, regione, zona e link. Le modifiche ai fazzolettoni hanno uno storico proprio.
 	</p>
 	{#if form?.errore}<p class="errore">{form.errore}</p>{/if}
 	{#if page.url.searchParams.get('ripristinata')}

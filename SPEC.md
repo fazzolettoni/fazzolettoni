@@ -195,7 +195,7 @@ Gli URL devono essere **leggibili e stabili**, perché verranno linkati da Scout
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `/agesci/sicilia/rosolini-1`                   | Pagina del gruppo: **fazzolettone attuale** in evidenza, linea del tempo con i precedenti |
 | `/agesci/sicilia/rosolini-1/1974-1996`         | Un fazzolettone storico                                                                   |
-| `/agesci/sicilia/rosolini-1/1974-1996/storia`  | Storico delle revisioni                                                                   |
+| `/agesci/sicilia/rosolini-1/1974-1996/storico` | Storico delle revisioni                                                                   |
 | `/agesci/sicilia/rosolini-1/1974-1996?rev=123` | Una revisione specifica                                                                   |
 | `/agesci/sicilia/rosolini-1.svg`, `.png`       | Export del fazzolettone attuale                                                           |
 

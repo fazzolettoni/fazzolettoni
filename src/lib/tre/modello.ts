@@ -95,10 +95,7 @@ export async function istanza(url = MODELLO): Promise<Istanza> {
 			if (!fronte || !retro) return;
 			const f: THREE.MeshStandardMaterial = fronte;
 			const r: THREE.MeshStandardMaterial = retro;
-			const [tf, tr] = await Promise.all([
-				texture(renderDesign(d, { faccia: 'fronte', id: 'f3d', texture: true }).svg),
-				texture(renderDesign(d, { faccia: 'retro', id: 'r3d', texture: true }).svg)
-			]);
+			const [tf, tr] = await textureDi(d);
 			f.map?.dispose();
 			r.map?.dispose();
 			f.map = tf;
@@ -114,7 +111,28 @@ export async function istanza(url = MODELLO): Promise<Istanza> {
 	};
 }
 
-async function texture(svg: string): Promise<THREE.CanvasTexture> {
+/**
+ * Le due texture (faccia esterna e interna del modello) per un design.
+ *
+ * Il modello usa le stesse UV sulle due facce: un punto del tessuto ha la stessa coordinata
+ * davanti e dietro, quindi il retro si disegna senza specchiarlo.
+ *
+ * Il quadrato si indossa piegato lungo la diagonale orizzontale: fuori resta la metà inferiore
+ * del fronte (già con il lato lungo in alto), dentro finisce la metà superiore, ribaltata dalla
+ * piega. Il retro del quadrato resta chiuso tra i due strati e non si vede.
+ */
+async function textureDi(d: Design): Promise<[THREE.CanvasTexture, THREE.CanvasTexture]> {
+	const r = (faccia: 'fronte' | 'retro', id: string) =>
+		renderDesign(d, { faccia, id, texture: true }).svg;
+	if (d.forma === 'quadrato') {
+		const img = await immagine(r('fronte', 'q3d'));
+		return [texture(img, 'sotto'), texture(img, 'sopra')];
+	}
+	const [f, b] = await Promise.all([immagine(r('fronte', 'f3d')), immagine(r('retro', 'r3d'))]);
+	return [texture(f, 'tutta'), texture(b, 'tutta')];
+}
+
+async function immagine(svg: string): Promise<HTMLImageElement> {
 	const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
 	try {
 		const img = new Image();
@@ -123,17 +141,33 @@ async function texture(svg: string): Promise<THREE.CanvasTexture> {
 			img.onerror = () => ko(new Error('SVG non caricabile'));
 			img.src = url;
 		});
-		const canvas = document.createElement('canvas');
-		canvas.width = canvas.height = LATO_TEXTURE;
-		canvas.getContext('2d')!.drawImage(img, 0, 0, LATO_TEXTURE, LATO_TEXTURE / 2);
-		const t = new THREE.CanvasTexture(canvas);
-		t.flipY = false; // convenzione glTF
-		t.colorSpace = THREE.SRGBColorSpace;
-		t.anisotropy = 8;
-		return t;
+		return img;
 	} finally {
 		URL.revokeObjectURL(url);
 	}
+}
+
+/** La sagoma va nella metà superiore della texture (u 0–1, v 0–0,5). */
+function texture(img: HTMLImageElement, parte: 'tutta' | 'sotto' | 'sopra'): THREE.CanvasTexture {
+	const L = LATO_TEXTURE;
+	const canvas = document.createElement('canvas');
+	canvas.width = canvas.height = L;
+	const ctx = canvas.getContext('2d')!;
+	const w = img.width;
+	const h = img.height;
+	if (parte === 'tutta') ctx.drawImage(img, 0, 0, L, L / 2);
+	else if (parte === 'sotto') ctx.drawImage(img, 0, h / 2, w, h / 2, 0, 0, L, L / 2);
+	else {
+		// ribaltata attorno alla piega: la diagonale orizzontale resta in alto
+		ctx.translate(0, L / 2);
+		ctx.scale(1, -1);
+		ctx.drawImage(img, 0, 0, w, h / 2, 0, 0, L, L / 2);
+	}
+	const t = new THREE.CanvasTexture(canvas);
+	t.flipY = false; // convenzione glTF
+	t.colorSpace = THREE.SRGBColorSpace;
+	t.anisotropy = 8;
+	return t;
 }
 
 /** Luci e camera comuni a tutte le viste. */
