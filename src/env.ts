@@ -15,5 +15,9 @@ export const variables = defineEnvVars({
 		public: true,
 		schema: obbligatoria('PUBLIC_SUPABASE_PUBLISHABLE_KEY'),
 		description: 'Chiave pubblica di Supabase: i permessi li decidono le regole del database'
+	},
+	ALPHA_PASSWORD: {
+		schema: (v) => v || undefined,
+		description: 'Se impostata, tutto il sito chiede questa password (versione alpha privata)'
 	}
 });

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SchedaSicilia from '#lib/components/SchedaSicilia.svelte';
-	import { FONTE_SICILIA, SCHEDE_SICILIA } from '#lib/import/index.ts';
+	import { FONTE_SICILIA, SCHEDE_SICILIA } from '#lib/import/locale.ts';
 
 	type Filtro = 'tutti' | 'rivedere' | 'conflitti' | 'interpretati' | 'puliti';
 	let filtro = $state<Filtro>('tutti');

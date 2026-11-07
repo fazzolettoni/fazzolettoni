@@ -4,7 +4,8 @@
  * Uso: npm run seed:sicilia   (richiede data/sicilia/grezzi.json e il database avviato)
  */
 import { createClient } from '@supabase/supabase-js';
-import { FONTE_SICILIA, SCHEDE_SICILIA } from '../src/lib/import/index';
+import grezzi from '../data/sicilia/grezzi.json' with { type: 'json' };
+import { fonteSicilia, schedeSicilia, type Grezzi } from '../src/lib/import/index';
 import { vuoto } from '../src/lib/import/sicilia';
 import type { DatiFazzolettone, DatiGruppo } from '../src/lib/supabase/tipi';
 
@@ -21,6 +22,8 @@ if (count) {
 	process.exit(1);
 }
 
+const FONTE_SICILIA = fonteSicilia(grezzi as Grezzi);
+const SCHEDE_SICILIA = schedeSicilia(grezzi as Grezzi);
 const fonte = `Import AGESCI Sicilia (${FONTE_SICILIA.aggiornata_al})`;
 let n = 0;
 for (const { gruppo: g, conversione: c } of SCHEDE_SICILIA) {

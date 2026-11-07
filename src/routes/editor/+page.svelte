@@ -9,7 +9,7 @@
 	import MisuraCm from '#lib/components/editor/MisuraCm.svelte';
 	import { STIMA_COLORI } from '#lib/design/colori.ts';
 	import { ESEMPI } from '#lib/design/esempi.ts';
-	import { SCHEDE_SICILIA } from '#lib/import/index.ts';
+	import { SCHEDE_SICILIA } from '#lib/import/locale.ts';
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
 	import { cambiaForma, nuovoDesign } from '#lib/design/nuovo.ts';
 	import { renderDesign } from '#lib/design/render.ts';

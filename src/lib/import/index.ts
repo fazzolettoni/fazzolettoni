@@ -2,7 +2,6 @@
  * Schede importate dalla raccolta AGESCI Sicilia, pronte per la galleria.
  * Dati per il proof of concept privato: non pubblicare senza permesso (vedi SPEC §8).
  */
-import grezzi from '../../../data/sicilia/grezzi.json';
 import {
 	convertiConRegole,
 	unisci,
@@ -18,11 +17,19 @@ export interface SchedaSicilia {
 	conversione: Conversione;
 }
 
-export const FONTE_SICILIA = {
-	url: grezzi.url,
-	aggiornata_al: grezzi.aggiornata_al,
-	curatore: grezzi.curatore
-};
+/** Il file estratto da scripts/sicilia/estrai.py (data/sicilia/grezzi.json, fuori dal repository). */
+export interface Grezzi {
+	url: string;
+	aggiornata_al: string;
+	curatore: string;
+	righe: unknown[];
+}
+
+export const fonteSicilia = (g: Grezzi) => ({
+	url: g.url,
+	aggiornata_al: g.aggiornata_al,
+	curatore: g.curatore
+});
 
 /** Converte e porta i lati alla forma giusta (es. "lati corti" di un quadrato). */
 export function converti(g: GruppoSicilia): Conversione {
@@ -52,7 +59,5 @@ function convertiGrezzo(g: GruppoSicilia): Conversione {
 	};
 }
 
-export const SCHEDE_SICILIA: SchedaSicilia[] = unisci(grezzi.righe as RigaGrezza[]).map((g) => ({
-	gruppo: g,
-	conversione: converti(g)
-}));
+export const schedeSicilia = (g: Grezzi): SchedaSicilia[] =>
+	unisci(g.righe as RigaGrezza[]).map((gr) => ({ gruppo: gr, conversione: converti(gr) }));

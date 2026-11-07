@@ -2,10 +2,9 @@
 	import Fazzolettone3D from '#lib/components/Fazzolettone3D.svelte';
 	import Disegno from '#lib/components/Disegno.svelte';
 	import { ESEMPI } from '#lib/design/esempi.ts';
-	import { SCHEDE_SICILIA } from '#lib/import/index.ts';
+	import { SCHEDE_SICILIA } from '#lib/import/locale.ts';
 	import type { Design } from '#lib/design/schema.ts';
 
-	// Il modello è un triangolo arrotolato: per i quadrati servirà un modello a parte
 	const voci: { id: string; nome: string; design: Design }[] = [
 		...ESEMPI.map((e) => ({ id: `es-${e.id}`, nome: `Esempio · ${e.gruppo}`, design: e.design })),
 		...SCHEDE_SICILIA.map((s) => ({
@@ -13,7 +12,7 @@
 			nome: `Sicilia · ${s.gruppo.nome}${s.gruppo.variante ? ` (${s.gruppo.variante})` : ''}`,
 			design: s.conversione.design
 		}))
-	].filter((v) => (v.design.forma ?? 'triangolo') === 'triangolo');
+	];
 
 	let scelto = $state(voci[0].id);
 	const voce = $derived(voci.find((v) => v.id === scelto) ?? voci[0]);
@@ -27,7 +26,7 @@
 		<select bind:value={scelto}>
 			{#each voci as v (v.id)}<option value={v.id}>{v.nome}</option>{/each}
 		</select>
-		<span class="nota">Trascina per ruotare, rotella per lo zoom. Solo triangoli.</span>
+		<span class="nota">Trascina per ruotare, rotella per lo zoom.</span>
 	</header>
 	<div class="area">
 		<div class="tre"><Fazzolettone3D design={voce.design} /></div>

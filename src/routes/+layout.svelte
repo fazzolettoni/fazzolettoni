@@ -1,5 +1,6 @@
 <script lang="ts">
 	import favicon from '#lib/assets/favicon.svg';
+	import { page } from '$app/state';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
@@ -9,21 +10,21 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<nav class="barra-sito">
-	<a class="marchio" href="/">Fazzolettoni</a>
-	<a href="/modifiche">Ultime modifiche</a>
-	<a href="/nuovo-gruppo">Nuovo gruppo</a>
-	<a href="/esempi">Esempi</a>
-	<a href="/sicilia">Import Sicilia</a>
-	<span class="spazio"></span>
-	{#if data.profilo}
-		{#if data.profilo.ruolo !== 'utente'}<a href="/moderazione">Moderazione</a>{/if}
-		<a href="/profilo">{data.profilo.nome}</a>
-		<form method="POST" action="/esci"><button>Esci</button></form>
-	{:else}
-		<a href="/accedi">Accedi</a>
-	{/if}
-</nav>
+{#if page.url.pathname !== '/alpha'}
+	<nav class="barra-sito">
+		<a class="marchio" href="/">Fazzolettoni</a>
+		<a href="/modifiche">Ultime modifiche</a>
+		<a href="/nuovo-gruppo">Nuovo gruppo</a>
+		<span class="spazio"></span>
+		{#if data.profilo}
+			{#if data.profilo.ruolo !== 'utente'}<a href="/moderazione">Moderazione</a>{/if}
+			<a href="/profilo">{data.profilo.nome}</a>
+			<form method="POST" action="/esci"><button>Esci</button></form>
+		{:else}
+			<a href="/accedi">Accedi</a>
+		{/if}
+	</nav>
+{/if}
 
 {@render children()}
 

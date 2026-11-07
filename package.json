@@ -25,7 +25,7 @@
 		"verifica:permessi": "tsx --env-file=.env.local scripts/verifica-permessi.ts"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^8.0.0",
+		"@sveltejs/adapter-vercel": "^7.0.2",
 		"@sveltejs/kit": "^3.0.0",
 		"@sveltejs/vite-plugin-svelte": "^7.2.0",
 		"prettier": "^3.8.3",
@@ -43,5 +43,8 @@
 		"@supabase/supabase-js": "^2.119.0",
 		"@types/three": "^0.187.0",
 		"three": "^0.187.0"
+	},
+	"engines": {
+		"node": "24.x"
 	}
 }

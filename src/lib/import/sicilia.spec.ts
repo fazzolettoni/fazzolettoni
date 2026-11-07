@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { misure, unisci, type RigaGrezza } from './sicilia';
-import { SCHEDE_SICILIA } from './index';
+import { SCHEDE_SICILIA } from './locale';
 import { MANUALI } from './sicilia-manuali';
 import { renderDesign } from '../design/render';
 
@@ -28,17 +28,18 @@ describe('import Sicilia', () => {
 		expect(g.conflitti).toEqual([{ campo: 'larghezza', dettagli: '1', supsystic: '1,5 cm' }]);
 	});
 
-	it('stesso nome in associazioni diverse = gruppi diversi', () => {
+	// servono i dati grezzi, che non sono nel repository
+	it.skipIf(!SCHEDE_SICILIA.length)('stesso nome in associazioni diverse = gruppi diversi', () => {
 		const ids = SCHEDE_SICILIA.filter((s) => s.gruppo.nome === 'Palermo 6').map((s) => s.gruppo.id);
 		expect(ids.sort()).toEqual(['palermo-6', 'palermo-6-fse']);
 	});
 
-	it('ogni interpretazione manuale corrisponde a un gruppo', () => {
+	it.skipIf(!SCHEDE_SICILIA.length)('ogni interpretazione manuale corrisponde a un gruppo', () => {
 		const ids = new Set(SCHEDE_SICILIA.map((s) => s.gruppo.id));
 		for (const id of Object.keys(MANUALI)) expect(ids.has(id), id).toBe(true);
 	});
 
-	it('tutte le schede si disegnano', () => {
+	it.skipIf(!SCHEDE_SICILIA.length)('tutte le schede si disegnano', () => {
 		for (const s of SCHEDE_SICILIA) {
 			const { svg } = renderDesign(s.conversione.design, { id: s.gruppo.id });
 			expect(svg, s.gruppo.id).not.toContain('NaN');
