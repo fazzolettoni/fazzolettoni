@@ -96,8 +96,8 @@ export const DEFAULT = {
 	colore_sconosciuto: '#c8c8c8',
 	lati: {
 		triangolo: ['corto_sx', 'corto_dx'] as Lato[],
-		// come i lati corti del triangolo: quelli che si vedono quando è piegato
-		quadrato: ['basso_sx', 'basso_dx'] as Lato[]
+		// nel quadrato i lati sono tutti uguali: "i lati corti" sono tutti e quattro
+		quadrato: ['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx'] as Lato[]
 	}
 };
 
@@ -113,23 +113,24 @@ const LATI_VECCHI: Record<string, Lato> = {
 };
 
 /**
- * Un quadrato si indossa piegato lungo la diagonale orizzontale: il triangolo che si vede ha
- * come "lati corti" i due lati in basso del rombo. Così le descrizioni "sui lati corti" valgono
- * anche per i quadrati. Il "lato lungo" (la piega) sul quadrato non esiste.
+ * Nel quadrato i lati sono tutti uguali, quindi "i lati corti" sono tutti e quattro. Il lato
+ * corto sinistro diventa la metà sinistra del rombo, il destro la metà destra (per le
+ * fettucce "una per lato"). Il "lato lungo" (la piega) sul quadrato non esiste.
  */
-const LATI_CORTI_SU_QUADRATO: Record<string, Lato | null> = {
-	corto_sx: 'basso_sx',
-	corto_dx: 'basso_dx',
-	lungo: null
+const LATI_CORTI_SU_QUADRATO: Record<string, Lato[]> = {
+	corto_sx: ['alto_sx', 'basso_sx'],
+	corto_dx: ['alto_dx', 'basso_dx'],
+	lungo: []
 };
+const ORDINE_QUADRATO: Lato[] = ['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx'];
 
 /** Traduce i nomi vecchi e quelli del triangolo nei lati della forma indicata. */
 export function normalizzaLati(lati: string[], forma: Forma | null): Lato[] {
 	const out = lati.map((l) => LATI_VECCHI[l] ?? (l as Lato));
 	if (forma !== 'quadrato') return out;
-	return out
-		.map((l) => (l in LATI_CORTI_SU_QUADRATO ? LATI_CORTI_SU_QUADRATO[l] : l))
-		.filter((l): l is Lato => !!l);
+	if (!out.some((l) => l in LATI_CORTI_SU_QUADRATO)) return out;
+	const insieme = new Set(out.flatMap((l) => LATI_CORTI_SU_QUADRATO[l] ?? [l]));
+	return ORDINE_QUADRATO.filter((l) => insieme.has(l));
 }
 
 /** Porta un design salvato con convenzioni vecchie a quelle attuali (copia). */

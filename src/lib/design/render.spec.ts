@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rientra, sagoma } from './geometria';
 import { renderDesign } from './render';
 import { ESEMPI } from './esempi';
-import type { Design } from './schema';
+import { normalizzaLati, type Design } from './schema';
 
 describe('geometria', () => {
 	it('il quadrato è a rombo e rientra di 10 mm su tutti i lati', () => {
@@ -60,6 +60,17 @@ describe('renderDesign', () => {
 		expect(renderDesign(design(['alto', 'destra', 'basso', 'sinistra'])).svg).toBe(
 			renderDesign(design(['alto_sx', 'alto_dx', 'basso_dx', 'basso_sx'])).svg
 		);
+	});
+
+	it('sul quadrato i lati corti sono tutti e quattro, divisi a metà', () => {
+		expect(normalizzaLati(['corto_sx', 'corto_dx'], 'quadrato')).toEqual([
+			'alto_sx',
+			'alto_dx',
+			'basso_dx',
+			'basso_sx'
+		]);
+		expect(normalizzaLati(['corto_dx'], 'quadrato')).toEqual(['alto_dx', 'basso_dx']);
+		expect(normalizzaLati(['corto_sx'], 'triangolo')).toEqual(['corto_sx']);
 	});
 
 	it('disegna tutti gli esempi, fronte e retro, senza errori', () => {
