@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Disegno from '#lib/components/Disegno.svelte';
+	import Miniatura3D from '#lib/components/Miniatura3D.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -40,7 +40,7 @@
 			<li>
 				<a href="/{g.associazione}/{g.regione_slug}/{g.slug}">
 					<div class="mini">
-						{#if g.design}<Disegno design={g.design} id="h-{g.id}" />{:else}<div
+						{#if g.design}<Miniatura3D design={g.design} id={g.id} />{:else}<div
 								class="vuoto"
 							></div>{/if}
 					</div>
@@ -123,14 +123,11 @@
 		border-color: #2a5db0;
 	}
 	.mini {
-		aspect-ratio: 2 / 1;
+		aspect-ratio: 4 / 5;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 0.3rem;
-	}
-	.mini :global(.disegno) {
-		width: 100%;
 	}
 	.vuoto {
 		width: 100%;

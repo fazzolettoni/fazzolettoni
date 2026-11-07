@@ -14,6 +14,7 @@
 
 	const avvisi = $derived(renderDesign(dati.design, { id: `${id}-av` }).avvisi);
 	const quadrato = $derived(dati.design.forma === 'quadrato');
+	let vista3d = $state(false);
 	const originali = $derived(
 		Object.entries(dati.dati_originali ?? {}).filter(
 			([k, v]) => v && !['gruppo', 'foto', 'associazione', 'note_storiche'].includes(k)
@@ -31,7 +32,20 @@
 		</figure>
 	</div>
 
+	{#if vista3d}
+		<div class="tre">
+			{#await import('./Fazzolettone3D.svelte') then m}
+				<m.default design={dati.design} />
+			{/await}
+		</div>
+	{/if}
+
 	<div class="azioni">
+		{#if !quadrato}
+			<button type="button" aria-pressed={vista3d} onclick={() => (vista3d = !vista3d)}
+				>{vista3d ? 'Chiudi 3D' : '3D'}</button
+			>
+		{/if}
 		<button
 			type="button"
 			onclick={() => scaricaSvg(renderDesign(dati.design, { id: 'x' }).svg, nomeFile)}>SVG</button
@@ -91,6 +105,13 @@
 </section>
 
 <style>
+	.tre {
+		height: min(70vh, 560px);
+		background: #ece9e3;
+		border-radius: 10px;
+		overflow: hidden;
+		margin: 0.6rem 0;
+	}
 	.scheda {
 		display: flex;
 		flex-direction: column;
