@@ -21,6 +21,8 @@ export interface Opzioni {
 	faccia?: QualeFaccia;
 	/** Prefisso per gli id interni (clipPath ecc.): deve essere unico nella pagina. */
 	id?: string;
+	/** Per le texture 3D: niente margine né contorno, la sagoma riempie l'immagine. */
+	texture?: boolean;
 }
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -219,7 +221,7 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 	});
 
 	// --- montaggio
-	const m = 4;
+	const m = opzioni.texture ? 0 : 4;
 	const W = sag.larghezza;
 	const H = sag.altezza;
 	defs.unshift(`<clipPath id="${id}-sag"><path d="${pSag}"/></clipPath>`);
@@ -233,7 +235,10 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-m} ${-m} ${W + 2 * m} ${H + 2 * m}" width="${(W + 2 * m).toFixed(0)}" height="${(H + 2 * m).toFixed(0)}">` +
 		`<defs>${defs.join('')}</defs>` +
 		`<g${trasf}><g clip-path="url(#${id}-sag)">${corpo.join('')}</g>` +
-		`<path d="${pSag}" fill="none" stroke="#333" stroke-width="2" stroke-linejoin="round"/></g>` +
+		(opzioni.texture
+			? ''
+			: `<path d="${pSag}" fill="none" stroke="#333" stroke-width="2" stroke-linejoin="round"/>`) +
+		`</g>` +
 		`</svg>`;
 
 	if (stimati.size) avvisi.push(`Colori stimati dal nome: ${[...stimati].join(', ')}`);

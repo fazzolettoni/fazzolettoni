@@ -40,6 +40,8 @@
 	},
 	"dependencies": {
 		"@supabase/ssr": "^0.12.7",
-		"@supabase/supabase-js": "^2.119.0"
+		"@supabase/supabase-js": "^2.119.0",
+		"@types/three": "^0.187.0",
+		"three": "^0.187.0"
 	}
 }
