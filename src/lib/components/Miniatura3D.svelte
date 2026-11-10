@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import type { Design } from '#lib/design/schema.ts';
 	import Disegno from './Disegno.svelte';
+	import sagoma from '#lib/assets/sagoma.png';
 
 	/**
 	 * Immagine fissa del fazzolettone indossato, generata quando entra nello schermo con il
@@ -54,7 +55,8 @@
 	{:else if src}
 		<img {src} alt="" />
 	{:else}
-		<div class="attesa"></div>
+		<!-- mentre l'immagine 3D si genera: la sagoma di un fazzolettone generico -->
+		<div class="attesa" style:--sagoma="url({sagoma})"></div>
 	{/if}
 </div>
 
@@ -76,10 +78,22 @@
 		width: 80%;
 	}
 	.attesa {
-		width: 60%;
-		height: 80%;
-		border-radius: 40% 40% 10% 10%;
-		background: #f0eee9;
+		height: 82%;
+		aspect-ratio: 232 / 450;
+		background: #e4e0d8;
+		mask: var(--sagoma) center / contain no-repeat;
+		-webkit-mask: var(--sagoma) center / contain no-repeat;
+		animation: respira 1.6s ease-in-out infinite alternate;
+	}
+	@keyframes respira {
+		to {
+			background: #eeebe5;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.attesa {
+			animation: none;
+		}
 	}
 	@keyframes compare {
 		from {
