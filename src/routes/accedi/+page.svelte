@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
 	import type { PageProps } from './$types';
 	let { data, form }: PageProps = $props();
 </script>
@@ -12,10 +13,10 @@
 			Ti abbiamo mandato un link di accesso a <strong>{form.email}</strong>. Aprilo da questo
 			browser per entrare.
 		</p>
-		<p class="nota">
-			In sviluppo le email non partono davvero: si leggono nella casella di prova su
-			<a href="http://127.0.0.1:54324" target="_blank" rel="noreferrer">127.0.0.1:54324</a>.
-		</p>
+		{#if dev}<p class="nota">
+				In sviluppo le email non partono davvero: si leggono nella casella di prova su
+				<a href="http://127.0.0.1:54324" target="_blank" rel="noreferrer">127.0.0.1:54324</a>.
+			</p>{/if}
 	{:else}
 		<p>
 			Per modificare serve un account. Non c'è nessuna password: inserisci l'email e ricevi un link
