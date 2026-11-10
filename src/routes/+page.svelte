@@ -40,9 +40,11 @@
 			<li>
 				<a href="/{g.associazione}/{g.regione_slug}/{g.slug}">
 					<div class="mini">
-						{#if g.design}<Miniatura3D design={g.design} id={g.id} />{:else}<div
-								class="vuoto"
-							></div>{/if}
+						{#if g.design}<Miniatura3D
+								design={g.design}
+								id={g.id}
+								associazione={g.associazione}
+							/>{:else}<div class="vuoto"></div>{/if}
 					</div>
 					<strong>{g.nome}</strong>
 					<span class="meta"

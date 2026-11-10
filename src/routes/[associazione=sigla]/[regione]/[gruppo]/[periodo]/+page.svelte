@@ -30,7 +30,12 @@
 		</p>
 	{/if}
 	<article>
-		<SchedaFazzolettone {dati} id="fz-{f.id}" nomeFile="{g.slug}-{f.slug}" />
+		<SchedaFazzolettone
+			{dati}
+			id="fz-{f.id}"
+			nomeFile="{g.slug}-{f.slug}"
+			associazione={g.associazione}
+		/>
 	</article>
 </main>
 

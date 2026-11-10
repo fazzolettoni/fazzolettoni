@@ -8,7 +8,11 @@
 	 * renderer condiviso. Ogni gruppo ha una sua leggera rotazione, sempre la stessa. Se qualcosa
 	 * va storto si ripiega sul disegno piatto.
 	 */
-	let { design, id }: { design: Design; id: string } = $props();
+	let {
+		design,
+		id,
+		associazione = null
+	}: { design: Design; id: string; associazione?: string | null } = $props();
 
 	let elemento: HTMLDivElement;
 	let src = $state<string | null>(null);
@@ -23,7 +27,10 @@
 				oss.disconnect();
 				try {
 					const { fotografa, gradiDa } = await import('#lib/tre/modello.ts');
-					url = await fotografa($state.snapshot(design) as Design, { gradi: gradiDa(id) });
+					url = await fotografa($state.snapshot(design) as Design, {
+						gradi: gradiDa(id),
+						associazione
+					});
 					if (attivo) src = url;
 					else URL.revokeObjectURL(url);
 				} catch {

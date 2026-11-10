@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import type { Design } from '../design/schema';
 import { renderDesign } from '../design/render';
+import { textureNodo } from './nodo';
 
 export const MODELLO = '/modelli/fazzolettone.glb';
 const LATO_TEXTURE = 2048;
@@ -68,8 +69,8 @@ export interface Istanza {
 	centro: THREE.Vector3;
 	/** Diagonale del riquadro: serve a inquadrare. */
 	misura: number;
-	/** Applica fronte e retro di un design. */
-	applica(d: Design): Promise<void>;
+	/** Applica fronte e retro di un design e la sigla dell'associazione sul portafazzolettone. */
+	applica(d: Design, associazione?: string | null): Promise<void>;
 	dispose(): void;
 }
 
@@ -78,24 +79,36 @@ export async function istanza(url = MODELLO): Promise<Istanza> {
 	const oggetto = (await modello(url)).clone(true);
 	let fronte: THREE.MeshStandardMaterial | null = null;
 	let retro: THREE.MeshStandardMaterial | null = null;
+	let nodo: THREE.MeshStandardMaterial | null = null;
 	oggetto.traverse((o) => {
 		if (!(o instanceof THREE.Mesh)) return;
 		const m = o.material as THREE.MeshStandardMaterial;
-		if (m.name !== 'FAZZOLETTONE') return;
-		fronte = m.clone();
-		retro = m.clone();
-		o.material = [fronte, retro];
+		if (m.name === 'FAZZOLETTONE') {
+			fronte = m.clone();
+			retro = m.clone();
+			o.material = [fronte, retro];
+		} else if (m.name === 'BLOCCO') {
+			// il portafazzolettone: mai la texture del modello (logo AGESCI, un marchio)
+			nodo = m.clone();
+			nodo.map = null;
+			o.material = nodo;
+		}
 	});
 	const box = new THREE.Box3().setFromObject(oggetto);
 	return {
 		oggetto,
 		centro: box.getCenter(new THREE.Vector3()),
 		misura: box.getSize(new THREE.Vector3()).length(),
-		async applica(d) {
+		async applica(d, associazione) {
 			if (!fronte || !retro) return;
 			const f: THREE.MeshStandardMaterial = fronte;
 			const r: THREE.MeshStandardMaterial = retro;
-			const [tf, tr] = await textureDi(d);
+			const n = nodo as THREE.MeshStandardMaterial | null;
+			const [[tf, tr], tn] = await Promise.all([textureDi(d), textureNodo(associazione)]);
+			if (n && n.map !== tn) {
+				n.map = tn; // condivisa tra le viste: non si libera
+				n.needsUpdate = true;
+			}
 			f.map?.dispose();
 			r.map?.dispose();
 			f.map = tf;
@@ -107,6 +120,7 @@ export async function istanza(url = MODELLO): Promise<Istanza> {
 				m?.map?.dispose();
 				m?.dispose();
 			}
+			(nodo as THREE.MeshStandardMaterial | null)?.dispose();
 		}
 	};
 }
@@ -229,6 +243,8 @@ function preparaFotografo() {
 export interface OpzioniFoto {
 	/** Rotazione attorno all'asse verticale, in gradi. */
 	gradi?: number;
+	/** Sigla dell'associazione, scritta sul portafazzolettone. */
+	associazione?: string | null;
 	larghezza?: number;
 	altezza?: number;
 }
@@ -244,7 +260,7 @@ export function fotografa(d: Design, o: OpzioniFoto = {}): Promise<string> {
 		camera.aspect = w / h;
 		camera.updateProjectionMatrix();
 		perno.rotation.y = THREE.MathUtils.degToRad(o.gradi ?? 0);
-		await i.applica(d);
+		await i.applica(d, o.associazione);
 		renderer.render(s, camera);
 		const blob = await new Promise<Blob | null>((ok) =>
 			renderer.domElement.toBlob(ok, 'image/png')

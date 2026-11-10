@@ -10,8 +10,16 @@
 		dati,
 		id,
 		titolo,
-		nomeFile
-	}: { dati: DatiFazzolettone; id: string; titolo?: string; nomeFile: string } = $props();
+		nomeFile,
+		associazione = null
+	}: {
+		dati: DatiFazzolettone;
+		id: string;
+		titolo?: string;
+		nomeFile: string;
+		/** Sigla dell'associazione, per il portafazzolettone del 3D. */
+		associazione?: string | null;
+	} = $props();
 
 	const avvisi = $derived(renderDesign(dati.design, { id: `${id}-av` }).avvisi);
 	const quadrato = $derived(dati.design.forma === 'quadrato');
@@ -28,7 +36,7 @@
 		<!-- three.js si scarica a parte, solo nelle pagine che lo mostrano -->
 		<div class="tre">
 			{#await import('./Fazzolettone3D.svelte') then m}
-				<m.default design={dati.design} />
+				<m.default design={dati.design} {associazione} />
 			{/await}
 			<span class="aiuto">trascina per ruotare · rotella per lo zoom</span>
 		</div>

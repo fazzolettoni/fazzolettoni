@@ -5,12 +5,18 @@
 	import { SCHEDE_SICILIA } from '#lib/import/locale.ts';
 	import type { Design } from '#lib/design/schema.ts';
 
-	const voci: { id: string; nome: string; design: Design }[] = [
-		...ESEMPI.map((e) => ({ id: `es-${e.id}`, nome: `Esempio · ${e.gruppo}`, design: e.design })),
+	const voci: { id: string; nome: string; design: Design; associazione: string }[] = [
+		...ESEMPI.map((e) => ({
+			id: `es-${e.id}`,
+			nome: `Esempio · ${e.gruppo}`,
+			design: e.design,
+			associazione: e.associazione
+		})),
 		...SCHEDE_SICILIA.map((s) => ({
 			id: `si-${s.gruppo.id}`,
 			nome: `Sicilia · ${s.gruppo.nome}${s.gruppo.variante ? ` (${s.gruppo.variante})` : ''}`,
-			design: s.conversione.design
+			design: s.conversione.design,
+			associazione: s.gruppo.campi.associazione ?? 'AGESCI'
 		}))
 	];
 
@@ -29,7 +35,7 @@
 		<span class="nota">Trascina per ruotare, rotella per lo zoom.</span>
 	</header>
 	<div class="area">
-		<div class="tre"><Fazzolettone3D design={voce.design} /></div>
+		<div class="tre"><Fazzolettone3D design={voce.design} associazione={voce.associazione} /></div>
 		<div class="piano"><Disegno design={voce.design} id="piano" /></div>
 	</div>
 </main>

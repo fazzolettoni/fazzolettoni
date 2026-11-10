@@ -52,7 +52,12 @@
 					<a href={percorsoFazzolettone(g, f)}>Link</a>
 				</nav>
 			</div>
-			<SchedaFazzolettone dati={f.rev.dati} id="g-{f.id}" nomeFile="{g.slug}-{f.slug}" />
+			<SchedaFazzolettone
+				dati={f.rev.dati}
+				id="g-{f.id}"
+				nomeFile="{g.slug}-{f.slug}"
+				associazione={g.associazione}
+			/>
 		</article>
 	{:else}
 		<p class="vuoto">Nessun fazzolettone descritto per questo gruppo.</p>

@@ -77,3 +77,9 @@ Sito su Vercel, database su un progetto Supabase gratuito. Con `ALPHA_PASSWORD` 
 5. **Amministratore**: accedi al sito, poi `npx tsx --env-file=.env.produzione scripts/ruolo.ts <email> amministratore`.
 
 Le email di accesso del servizio integrato di Supabase arrivano solo agli indirizzi del team del progetto e con un limite orario basso: per aprire la alpha ad altri serve un SMTP proprio (es. Resend), da impostare in Authentication → Emails.
+
+## Crediti
+
+- Modello 3D del fazzolettone indossato: realizzato per il progetto (`static/modelli/fazzolettone.glb`). La texture originale del portafazzolettone, con il logo AGESCI, non viene usata.
+- Emblema del portafazzolettone (`src/lib/assets/emblema.svg`): disegnato per il progetto da Michele Mauri, senza marchi di associazioni. La sigla sotto l'emblema è quella dell'associazione del gruppo; i nomi delle associazioni appartengono a loro.
+- Carattere Montserrat ExtraBold (pacchetto `@fontsource/montserrat`), licenza SIL Open Font License 1.1.

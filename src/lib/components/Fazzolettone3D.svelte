@@ -13,7 +13,11 @@
 	} from '#lib/tre/modello.ts';
 
 	/** Vista 3D interattiva del fazzolettone indossato (trascina per ruotare). */
-	let { design, modello = MODELLO }: { design: Design; modello?: string } = $props();
+	let {
+		design,
+		associazione = null,
+		modello = MODELLO
+	}: { design: Design; associazione?: string | null; modello?: string } = $props();
 
 	let contenitore: HTMLDivElement;
 	let errore = $state<string | null>(null);
@@ -23,9 +27,10 @@
 
 	$effect(() => {
 		const d = $state.snapshot(design) as Design;
+		const a = associazione;
 		if (pronto && fazz)
 			fazz
-				.applica(d)
+				.applica(d, a)
 				.then(() => ridisegna())
 				.catch((e) => (errore = String(e)));
 	});
