@@ -4,6 +4,7 @@
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
 	import { ETICHETTE_CAMPI, type Campo } from '#lib/import/sicilia.ts';
 	import type { DatiFazzolettone } from '#lib/supabase/tipi.ts';
+	import { linkSicuro, testoFonte } from '#lib/fonti.ts';
 
 	let {
 		dati,
@@ -67,10 +68,13 @@
 
 	{#if dati.fonti?.length}
 		<p class="fonti">
-			Fonte:
-			{#each dati.fonti as f, i}{#if i},
-				{/if}{#if f.url}<a href={f.url} target="_blank" rel="noreferrer">{f.nota ?? f.tipo}</a
-					>{:else}{f.nota ?? f.tipo}{/if}{/each}
+			{dati.fonti.length > 1 ? 'Fonti' : 'Fonte'}:
+			{#each dati.fonti as f, i}{#if i};
+				{/if}{@const link = linkSicuro(f.url)}{#if link}<a
+						href={link}
+						target="_blank"
+						rel="noreferrer nofollow">{testoFonte(f)}</a
+					>{:else}{testoFonte(f)}{/if}{/each}
 		</p>
 	{/if}
 

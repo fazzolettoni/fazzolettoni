@@ -3,11 +3,12 @@
 	import { page } from '$app/state';
 	import type { Design } from '#lib/design/schema.ts';
 	import { supabaseBrowser } from '#lib/supabase/browser.ts';
-	import type { DataParziale, DatiFazzolettone } from '#lib/supabase/tipi.ts';
+	import type { DataParziale, DatiFazzolettone, Fonte } from '#lib/supabase/tipi.ts';
+	import { pulisciFonti } from '#lib/fonti.ts';
 
 	/**
-	 * Salvataggio di un fazzolettone come nuova revisione. I campi non visuali (fonti, dati
-	 * originali dell'import…) si conservano da `base`.
+	 * Salvataggio di un fazzolettone come nuova revisione. I campi non visuali che qui non si
+	 * modificano (dati originali dell'import, note…) si conservano da `base`.
 	 */
 	let {
 		design,
@@ -37,6 +38,11 @@
 	let inizio = $state<Data>(untrack(() => daData(base?.data_inizio)));
 	let fine = $state<Data>(untrack(() => daData(base?.data_fine)));
 	let significato = $state(untrack(() => base?.significato ?? ''));
+	let fonti = $state<Fonte[]>(
+		untrack(() =>
+			(base?.fonti ?? []).map((f) => ({ tipo: f.tipo, nota: f.nota ?? '', url: f.url ?? '' }))
+		)
+	);
 	let commento = $state('');
 	let verificato = $state(false);
 	let salvando = $state(false);
@@ -54,6 +60,7 @@
 			data_inizio: aData(inizio),
 			data_fine: aData(fine),
 			significato: significato.trim() || null,
+			fonti: pulisciFonti(fonti),
 			da_rivedere: verificato ? [] : daRivedere,
 			affidabilita: verificato
 				? 'verificato'
@@ -97,6 +104,38 @@
 		<textarea rows="3" bind:value={significato} placeholder="perché questi colori, da quando…"
 		></textarea>
 	</label>
+	<fieldset class="fonti">
+		<legend>Fonti</legend>
+		<p class="nota">
+			Da dove vengono queste informazioni: una foto, un documento, un sito, un ricordo.
+		</p>
+		{#each fonti as f, i (i)}
+			<div class="fonte">
+				<input
+					bind:value={f.nota}
+					placeholder="es. foto del gruppo, 2019"
+					aria-label="Descrizione della fonte {i + 1}"
+				/>
+				<input
+					bind:value={f.url}
+					type="url"
+					placeholder="link (facoltativo)"
+					aria-label="Link della fonte {i + 1}"
+				/>
+				<button
+					type="button"
+					class="togli"
+					onclick={() => fonti.splice(i, 1)}
+					aria-label="Togli la fonte {i + 1}">×</button
+				>
+			</div>
+		{/each}
+		<button
+			type="button"
+			class="aggiungi"
+			onclick={() => fonti.push({ tipo: 'libera', nota: '', url: '' })}>+ Aggiungi una fonte</button
+		>
+	</fieldset>
 	<label>
 		Commento alla modifica
 		<input bind:value={commento} placeholder="cosa hai cambiato e come lo sai" />
@@ -190,6 +229,39 @@
 	}
 	.nota a {
 		color: #2a5db0;
+	}
+	.fonti {
+		border: 0;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+	legend {
+		font-size: 0.82rem;
+		color: #555;
+		padding: 0;
+		margin-bottom: 0.2rem;
+	}
+	.fonte {
+		display: grid;
+		grid-template-columns: 1.3fr 1fr auto;
+		gap: 0.3rem;
+	}
+	.fonte input {
+		min-width: 0;
+	}
+	.togli,
+	.aggiungi {
+		background: none;
+		color: #2a5db0;
+		border: 1px solid #ccc;
+		padding: 0.2rem 0.5rem;
+	}
+	.aggiungi {
+		align-self: flex-start;
+		font-size: 0.82rem;
 	}
 	.errore {
 		color: #b3261e;

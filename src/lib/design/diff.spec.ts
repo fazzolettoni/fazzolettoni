@@ -21,4 +21,21 @@ describe('differenze', () => {
 	it("ignora i metadati dell'import", () => {
 		expect(differenze({ dati_originali: { a: '1' } }, { dati_originali: { a: '2' } })).toEqual([]);
 	});
+
+	it('mostra le fonti aggiunte', () => {
+		const a = { fonti: [{ tipo: 'agesci-sicilia', nota: 'Tabella' }] };
+		const b = {
+			fonti: [
+				{ tipo: 'agesci-sicilia', nota: 'Tabella' },
+				{ tipo: 'libera', nota: 'Foto del gruppo', url: 'https://x.it' }
+			]
+		};
+		const d = differenze(a, b);
+		expect(d).toContainEqual({
+			campo: 'fonte 2 · descrizione',
+			prima: null,
+			dopo: 'Foto del gruppo'
+		});
+		expect(d).toContainEqual({ campo: 'fonte 2 · link', prima: null, dopo: 'https://x.it' });
+	});
 });

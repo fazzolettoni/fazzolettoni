@@ -7,7 +7,7 @@ export interface Differenza {
 }
 
 /** Metadati dell'import: non interessano a chi legge lo storico. */
-const IGNORA = new Set(['dati_originali', 'conflitti', 'note', 'fonti']);
+const IGNORA = new Set(['dati_originali', 'conflitti', 'note']);
 
 const NOMI: Record<string, string> = {
 	design: '',
@@ -45,14 +45,16 @@ const NOMI: Record<string, string> = {
 	zona: 'zona',
 	attivo: 'attivo',
 	link: 'link',
-	url: 'url'
+	url: 'link',
+	nota: 'descrizione'
 };
 
 const ELENCHI: Record<string, string> = {
 	fettucce: 'fettuccia',
 	colori: 'colore',
 	elementi: 'elemento',
-	link: 'link'
+	link: 'link',
+	fonti: 'fonte'
 };
 
 function appiattisci(v: unknown, percorso: string[], out: Map<string, string>) {
