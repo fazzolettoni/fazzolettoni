@@ -81,5 +81,5 @@ Le email di accesso del servizio integrato di Supabase arrivano solo agli indiri
 ## Crediti
 
 - Modello 3D del fazzolettone indossato: realizzato per il progetto (`static/modelli/fazzolettone.glb`). La texture originale del portafazzolettone, con il logo AGESCI, non viene usata.
-- Emblema del portafazzolettone (`src/lib/assets/emblema.svg`): disegnato per il progetto da Michele Mauri, senza marchi di associazioni. La sigla sotto l'emblema è quella dell'associazione del gruppo; i nomi delle associazioni appartengono a loro.
+- Portafazzolettone: porta solo la sigla dell'associazione del gruppo; i nomi delle associazioni appartengono a loro.
 - Carattere Montserrat ExtraBold (pacchetto `@fontsource/montserrat`), licenza SIL Open Font License 1.1.

@@ -2,7 +2,6 @@
 	import Disegno from './Disegno.svelte';
 	import { renderDesign } from '#lib/design/render.ts';
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
-	import { ETICHETTE_CAMPI, type Campo } from '#lib/import/sicilia.ts';
 	import type { DatiFazzolettone } from '#lib/supabase/tipi.ts';
 	import { linkSicuro, testoFonte } from '#lib/fonti.ts';
 
@@ -23,11 +22,6 @@
 
 	const avvisi = $derived(renderDesign(dati.design, { id: `${id}-av` }).avvisi);
 	const quadrato = $derived(dati.design.forma === 'quadrato');
-	const originali = $derived(
-		Object.entries(dati.dati_originali ?? {}).filter(
-			([k, v]) => v && !['gruppo', 'foto', 'associazione', 'note_storiche'].includes(k)
-		)
-	);
 </script>
 
 <section class="scheda">
@@ -86,24 +80,8 @@
 		</p>
 	{/if}
 
-	{#if originali.length}
-		<details>
-			<summary>Descrizione originale della fonte</summary>
-			<table>
-				<tbody>
-					{#each originali as [k, v]}
-						{@const c = dati.conflitti?.find((x) => x.campo === k)}
-						<tr class:conflitto={c}>
-							<th>{ETICHETTE_CAMPI[k as Campo] ?? k}</th>
-							<td>
-								{#if c}tab. 1: {c.dettagli}<br />tab. 2: {c.supsystic}{:else}{v}{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</details>
-	{/if}
+	<!-- I campi originali dell'import (dati_originali) restano nei dati ma non si mostrano:
+		non si possono modificare dall'interfaccia. -->
 	{#if avvisi.length}
 		<details>
 			<summary>Cosa è approssimato nel disegno</summary>
@@ -229,21 +207,6 @@
 		font-size: 0.85rem;
 		color: #666;
 		cursor: pointer;
-	}
-	table {
-		border-collapse: collapse;
-		font-size: 0.8rem;
-		margin-top: 0.3rem;
-	}
-	th {
-		text-align: left;
-		font-weight: 500;
-		color: #777;
-		padding: 0.15rem 0.8rem 0.15rem 0;
-		vertical-align: top;
-	}
-	tr.conflitto td {
-		color: #9b2a20;
 	}
 	.avvisi {
 		font-size: 0.8rem;
