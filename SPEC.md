@@ -131,7 +131,7 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 	"fondo": {
 		"tipo": "tinta_unita", // "tinta_unita" | "diviso" | "fantasia"
 		"colori": [/* Colore */], // 1 per tinta unita, 2 per diviso (sx, dx)
-		"fantasia": null // rimandato: riferimento a un asset/pattern
+		"fantasia": null // per "fantasia": { "asset", "larghezza_mm", "descrizione" } (vedi Fantasia)
 	},
 	"fettucce": [/* Fettuccia */],
 	"elementi": [/* Elemento */]
@@ -157,7 +157,8 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 	"distanza_bordo_mm": 0, // 0 = "bordato"; > 0 = "sarchiato"; "adiacente" = subito dentro la precedente
 	"lati": ["corto_sx", "corto_dx"],
 	"tratto": null, // fettuccia parziale: { "da_mm": 20, "a_mm": 100 } misurati dal vertice
-	"incrocio": null // "angolo" (unghiatura a 45°) | "incrociato" (prosegue dritta e si sovrappone): da confermare (§11)
+	"incrocio": null, // "angolo" (unghiatura a 45°) | "incrociato" (prosegue dritta e si sovrappone): da confermare (§11)
+	"fantasia": null // facoltativa: motivo ripetuto lungo la fettuccia (vedi Fantasia)
 }
 ```
 
@@ -165,6 +166,19 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 - Una fettuccia multicolore è divisa in parti uguali, dall'esterno verso l'interno.
 - Le fettucce funzionano come **livelli**: possono coprirsi a vicenda (es. Belpasso 2, la rossa copre la bianca agli angoli). Nell'editor andranno gestite come una lista di livelli riordinabili, come in un programma di grafica.
 - Casi coperti dalla raccolta siciliana: una sola fettuccia; 2-5 fettucce adiacenti (Rosolini 1, Gibellina 1); fettucce sovrapposte (Catania 19); bordo su tutti e quattro i lati (Belpasso 2); fettucce tricolori (Catania 13); strisce parziali (Augusta 4).
+
+### Fantasia
+
+```jsonc
+{ "asset": "3f9a…c1.svg", "larghezza_mm": 50, "descrizione": "scozzese rosso e verde" }
+```
+
+- Una fantasia (tartan, quadretti…) è un'**immagine che si ripete su una griglia rettangolare**: chi la disegna la prepara già per ripetersi senza giunture. Si usa sul fondo (`tipo: "fantasia"`) e sulle fettucce (Trapani 6: fettuccia scozzese).
+- `larghezza_mm` è la **larghezza reale di una ripetizione** sulla stoffa; l'altezza segue le proporzioni dell'immagine. Se manca si usano 50 mm, con un avviso.
+- Sulle fettucce il motivo **segue la direzione di ogni lato** (asse x lungo il lato, dal bordo verso l'interno); con le fettucce unite ad angolo ogni lato ha il suo pezzo, tagliato a 45°. Una fettuccia stretta mostra solo una fascia della tile, come una stoffa tagliata. I colori della fettuccia restano come riserva e come fondo sotto le parti trasparenti.
+- Le immagini stanno nello storage `tile` (PNG, JPG, WebP o SVG, massimo 1 MB). Il **nome del file è l'impronta SHA-256 del contenuto**: un file non si sovrascrive mai, quindi ogni revisione mostra sempre la tile che aveva (è la risposta al versioning degli asset, §11).
+- Nel disegno la tile è inserita come data URI dentro un `<pattern>`: un SVG mostrato come immagine non esegue codice, e così funzionano anche 3D ed export PNG.
+- **Per ora le caricano solo gli amministratori**, perché gli SVG non vengono ancora ripuliti (§11).
 
 ### Resa dei valori sconosciuti
 
@@ -311,21 +325,21 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
   - `npm run verifica:permessi` controlla le regole di accesso.
 - **Fase 2: apertura.** Permesso da AGESCI Sicilia, deploy pubblico, asset e foto caricabili, ruoli di moderazione.
 - **Fase 3: ScoutWiki.** Permesso, import AGESCI nazionale come bozze, gestione dei conflitti tra fonti.
-- **Dopo:** fantasie (tartan ecc.), osservati speciali, dataset aperto scaricabile, altre associazioni, 3D.
+- **Dopo:** osservati speciali, dataset aperto scaricabile, altre associazioni, 3D.
 
 ---
 
 ## 11. Questioni aperte
 
 - [ ] **Incrocio delle fettucce agli angoli**: cosa significa esattamente "incrociato" nella raccolta siciliana? Quali varianti esistono (sopra/sotto, intrecciato, tagliato a 45°)?
-- [ ] **Fantasie**: come rappresentare tartan e motivi. Pattern parametrico o immagine caricata?
+- [x] **Fantasie**: immagine caricata che si ripete su griglia rettangolare, su fondo e fettucce (§4, Fantasia). Più avanti si possono aggiungere motivi parametrici (righe, quadri) generati da colori e misure.
+- [ ] **Caricamento delle tile per tutti**: oggi solo gli amministratori. Per aprirlo serve ripulire gli SVG caricati (togliere script, link esterni, handler di eventi) o convertirli in PNG prima del salvataggio, e un modo per i moderatori di rimuovere un'immagine.
 - [ ] **Zone nel tempo**: basta un campo testuale o serve uno storico delle zone?
-- [ ] **Versioning degli asset**: proposto (file immutabili + versioni), da confermare.
+- [x] **Versioning degli asset**: file immutabili con il nome uguale all'impronta del contenuto (fatto per le tile; varrà anche per loghi e toppe).
 - [x] **Dimensioni standard**: 70 cm di cateto (lato lungo ≈ 99 cm), confermato dalla raccolta siciliana, dove "70 cm" è il lato corto di gran lunga più frequente (valori tra 45 e 115 cm). Per il quadrato 70 cm di lato resta provvisorio. Il default conta perché le fettucce sono in misure assolute: una fettuccia da 2,5 cm su un fazzolettone più piccolo appare più spessa.
 - [x] **Unità di misura**: tutto in **mm** nei dati, tutto in **cm** (con decimali) nell'interfaccia, perché le fonti usano i cm ("0,4 cm", "2,5 cm").
 - [ ] **Bicolore diviso**: la divisione è sempre lungo l'altezza dal vertice (sinistra/destra) o ci sono altre varianti?
 - [ ] **Posizione e livello sono accoppiati**: "adiacente" si riferisce alla fettuccia precedente _nella lista dei livelli_. Quando una fettuccia interna deve stare sopra una esterna (Siracusa 13, Palermo 6: "rossa su gialla"), bisogna usare distanze assolute. Valutare un riferimento esplicito ("adiacente a fettuccia X") o separare ordine di disegno e ordine dall'esterno.
-- [ ] **Fettucce a fantasia** (Trapani 6: fettuccia "tema scozzese"): oggi non rappresentabili.
 - [ ] **Chi può ripristinare**: oggi qualunque utente registrato (come in una wiki); sospensione e annullamento in blocco sono dei moderatori. Da confermare.
 - [ ] **URL del fazzolettone attuale**: oggi ogni fazzolettone ha uno slug di periodo (`dal-1996`, oppure `1` se le date sono ignote) e la pagina del gruppo mostra quello in uso. Quando gli si aggiunge la data di fine, l'URL cambia e il vecchio resta come redirect.
 - [ ] **Licenza del codice**: MIT o AGPL.

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Disegno from './Disegno.svelte';
 	import { renderDesign } from '#lib/design/render.ts';
+	import { TILE } from '#lib/design/tile.svelte.ts';
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
 	import type { DatiFazzolettone } from '#lib/supabase/tipi.ts';
 	import { linkSicuro, testoFonte } from '#lib/fonti.ts';
@@ -20,7 +21,7 @@
 		associazione?: string | null;
 	} = $props();
 
-	const avvisi = $derived(renderDesign(dati.design, { id: `${id}-av` }).avvisi);
+	const avvisi = $derived(renderDesign(dati.design, { id: `${id}-av`, tile: TILE }).avvisi);
 	const quadrato = $derived(dati.design.forma === 'quadrato');
 </script>
 
@@ -49,11 +50,13 @@
 	<div class="azioni">
 		<button
 			type="button"
-			onclick={() => scaricaSvg(renderDesign(dati.design, { id: 'x' }).svg, nomeFile)}>SVG</button
+			onclick={() => scaricaSvg(renderDesign(dati.design, { id: 'x', tile: TILE }).svg, nomeFile)}
+			>SVG</button
 		>
 		<button
 			type="button"
-			onclick={() => scaricaPng(renderDesign(dati.design, { id: 'x' }).svg, nomeFile)}>PNG</button
+			onclick={() => scaricaPng(renderDesign(dati.design, { id: 'x', tile: TILE }).svg, nomeFile)}
+			>PNG</button
 		>
 		{#if dati.affidabilita === 'importato'}<span class="et">importato</span>{/if}
 		{#if avvisi.length}<span class="et arancio" title={avvisi.join('\n')}>disegno approssimato</span

@@ -22,12 +22,23 @@ export interface Colore {
 	approssimato?: boolean;
 }
 
+/**
+ * Fantasia (tartan, quadretti…): un'immagine che si ripete su una griglia rettangolare.
+ * Il file sta nello storage "tile" e si chiama con l'impronta del contenuto (vedi SPEC §4).
+ */
+export interface Fantasia {
+	/** Nome del file, es. "3f9a….svg". null = fantasia descritta ma senza immagine. */
+	asset?: string | null;
+	/** Ogni quanti mm si ripete in larghezza (l'altezza segue le proporzioni dell'immagine). */
+	larghezza_mm?: number | null;
+	descrizione?: string | null;
+}
+
 export interface Fondo {
 	tipo: 'tinta_unita' | 'diviso' | 'fantasia';
-	/** 1 colore per tinta unita, 2 per diviso (sinistra, destra). */
+	/** 1 colore per tinta unita, 2 per diviso (sinistra, destra). Con la fantasia: colore di base. */
 	colori: Colore[];
-	/** Rimandato: riferimento a una fantasia (tartan ecc.). */
-	fantasia?: { descrizione: string } | null;
+	fantasia?: Fantasia | null;
 }
 
 export interface Fettuccia {
@@ -53,6 +64,8 @@ export interface Fettuccia {
 	incrocio: 'angolo' | 'incrociato' | null;
 	/** Fettuccia parziale: tratto misurato lungo il lato dal vertice (triangolo) o dall'angolo. */
 	tratto?: { da_mm: number; a_mm: number } | null;
+	/** Fettuccia con una fantasia: il motivo segue la direzione di ogni lato; i colori fanno da riserva. */
+	fantasia?: Fantasia | null;
 }
 
 export interface Elemento {
@@ -94,6 +107,8 @@ export const DEFAULT = {
 	lato_mm: 700,
 	larghezza_mm: 25,
 	colore_sconosciuto: '#c8c8c8',
+	/** Ripetizione di una fantasia quando la misura manca. */
+	fantasia_mm: 50,
 	lati: {
 		triangolo: ['corto_sx', 'corto_dx'] as Lato[],
 		// nel quadrato i lati sono tutti uguali: "i lati corti" sono tutti e quattro

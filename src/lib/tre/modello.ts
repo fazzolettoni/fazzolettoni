@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import type { Design } from '../design/schema';
 import { renderDesign } from '../design/render';
+import { caricaTile } from '../design/tile.svelte';
 import { textureNodo } from './nodo';
 
 export const MODELLO = '/modelli/fazzolettone.glb';
@@ -136,8 +137,9 @@ export async function istanza(url = MODELLO): Promise<Istanza> {
  * piega. Il retro del quadrato resta chiuso tra i due strati e non si vede.
  */
 async function textureDi(d: Design): Promise<[THREE.CanvasTexture, THREE.CanvasTexture]> {
+	const tile = await caricaTile(d);
 	const r = (faccia: 'fronte' | 'retro', id: string) =>
-		renderDesign(d, { faccia, id, texture: true }).svg;
+		renderDesign(d, { faccia, id, texture: true, tile }).svg;
 	if (d.forma === 'quadrato') {
 		const img = await immagine(r('fronte', 'q3d'));
 		return [texture(img, 'sotto'), texture(img, 'sopra')];

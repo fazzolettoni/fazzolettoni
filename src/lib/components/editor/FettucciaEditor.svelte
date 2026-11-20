@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ColoreInput from './ColoreInput.svelte';
 	import MisuraCm from './MisuraCm.svelte';
+	import FantasiaEditor from './FantasiaEditor.svelte';
 	import { ETICHETTE_LATI, LATI_PER_FORMA, nuovoColore } from '#lib/design/nuovo.ts';
 	import { DEFAULT, type Fettuccia, type Forma, type Lato } from '#lib/design/schema.ts';
 
@@ -152,6 +153,19 @@
 				<MisuraCm etichetta="A" bind:mm={fettuccia.tratto.a_mm} segnaposto="0" />
 			</div>
 		{/if}
+		<fieldset>
+			<legend>
+				<label class="check">
+					<input
+						type="checkbox"
+						checked={!!fettuccia.fantasia}
+						onchange={(e) => (fettuccia.fantasia = e.currentTarget.checked ? {} : null)}
+					/>
+					con una fantasia <small>(il motivo segue ogni lato; i colori fanno da riserva)</small>
+				</label>
+			</legend>
+			{#if fettuccia.fantasia}<FantasiaEditor bind:fantasia={fettuccia.fantasia} />{/if}
+		</fieldset>
 	</div>
 </details>
 

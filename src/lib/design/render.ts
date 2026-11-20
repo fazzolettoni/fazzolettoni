@@ -1,10 +1,20 @@
-import { bandaDritta, percorso, rettangoloTratto, rientra, sagoma, type Sagoma } from './geometria';
+import {
+	assi,
+	bandaDritta,
+	percorso,
+	rettangoloTratto,
+	rientra,
+	sagoma,
+	type P,
+	type Sagoma
+} from './geometria';
 import {
 	DEFAULT,
 	normalizzaLati,
 	type Colore,
 	type Design,
 	type Faccia,
+	type Fantasia,
 	type Fettuccia,
 	type Lato
 } from './schema';
@@ -23,7 +33,20 @@ export interface Opzioni {
 	id?: string;
 	/** Per le texture 3D: niente margine né contorno, la sagoma riempie l'immagine. */
 	texture?: boolean;
+	/** Immagini delle fantasie già caricate, per nome del file (vedi design/tile.svelte.ts). */
+	tile?: Record<string, TileCaricata>;
 }
+
+/** Una tile pronta da inserire nell'SVG: data URI e proporzioni. */
+export interface TileCaricata {
+	href: string;
+	larghezza: number;
+	altezza: number;
+}
+
+/** Nomi dei file delle tile: impronta SHA-256 più estensione. */
+export const ASSET_TILE = /^[0-9a-f]{64}\.(png|jpg|webp|svg)$/;
+const DATA_URI = /^data:image\/(png|jpeg|webp|svg\+xml);base64,[A-Za-z0-9+/=]+$/;
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
@@ -68,6 +91,40 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 		return c.hex;
 	};
 
+	/**
+	 * Motivo ripetuto di una fantasia, come riempimento SVG. `trasforma` orienta la griglia
+	 * (per le fettucce: lungo il lato). null se l'immagine non c'è: si usa la resa di riserva.
+	 */
+	const motivo = (
+		fant: Fantasia | null | undefined,
+		dove: string,
+		idMotivo: string,
+		trasforma = ''
+	): string | null => {
+		if (!fant?.asset) return null;
+		const t = ASSET_TILE.test(fant.asset) ? opzioni.tile?.[fant.asset] : undefined;
+		if (!t || !DATA_URI.test(t.href)) {
+			avvisi.push(`${dove}: immagine della fantasia non ancora caricata`);
+			return null;
+		}
+		let l = num(fant.larghezza_mm, 0);
+		if (l <= 0) {
+			avvisi.push(`${dove}: ripetizione della fantasia sconosciuta, uso ${DEFAULT.fantasia_mm} mm`);
+			l = DEFAULT.fantasia_mm;
+		}
+		const rapporto = num(t.altezza, 1) / num(t.larghezza, 1);
+		const h = l * (Number.isFinite(rapporto) && rapporto > 0 ? rapporto : 1);
+		const tr = trasforma ? ` patternTransform="${trasforma}"` : '';
+		defs.push(
+			`<pattern id="${idMotivo}" patternUnits="userSpaceOnUse" width="${l}" height="${h}"${tr}>` +
+				`<image href="${t.href}" width="${l}" height="${h}" preserveAspectRatio="none"/></pattern>`
+		);
+		return `url(#${idMotivo})`;
+	};
+	/** Griglia allineata a un bordo: asse x lungo il lato, asse y verso l'interno. */
+	const lungoIlBordo = (u: P, n: P, o: P) =>
+		`matrix(${[u.x, u.y, n.x, n.y, o.x, o.y].map((v) => v.toFixed(4)).join(' ')})`;
+
 	// --- forma e misure
 	let forma = design.forma;
 	if (forma !== 'triangolo' && forma !== 'quadrato') {
@@ -106,6 +163,11 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 		const [sx, dx] = sag.meta;
 		corpo.push(`<path d="${percorso(sx)}" fill="${colore(fondo.colori[0], 'Fondo sinistro')}"/>`);
 		corpo.push(`<path d="${percorso(dx)}" fill="${colore(fondo.colori[1], 'Fondo destro')}"/>`);
+	} else if (fondo.tipo === 'fantasia' && fondo.fantasia?.asset) {
+		const riempi = motivo(fondo.fantasia, 'Fondo', `${id}-fant`);
+		const base = fondo.colori[0]?.hex && HEX.test(fondo.colori[0].hex) ? fondo.colori[0].hex : null;
+		if (base || !riempi) corpo.push(`<path d="${pSag}" fill="${base ?? ignoto()}"/>`);
+		if (riempi) corpo.push(`<path d="${pSag}" fill="${riempi}"/>`);
 	} else if (fondo.tipo === 'fantasia') {
 		avvisi.push(
 			`Fantasia${fondo.fantasia?.descrizione ? ` "${fondo.fantasia.descrizione}"` : ''}: resa indicativa`
@@ -171,28 +233,59 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 
 		const parti: string[] = [];
 		const ws = w / colori.length;
-		colori.forEach((c, k) => {
-			const fill = colore(c, colori.length > 1 ? `${nome}, colore ${k + 1}` : nome);
-			const d0 = d + k * ws;
-			const d1 = d0 + ws;
-			if (incrocio === 'incrociato') {
-				for (const b of sag.bordi.filter((b) => lati.includes(b.lato))) {
-					parti.push(`<path d="${percorso(bandaDritta(b, sag, d0, d1))}" fill="${fill}"/>`);
-				}
-			} else {
-				const fuori = rientra(
-					sag,
-					sag.bordi.map((b) => (lati.includes(b.lato) ? d0 : 0))
-				);
-				const dentro = rientra(
-					sag,
-					sag.bordi.map((b) => (lati.includes(b.lato) ? d1 : 0))
-				);
-				parti.push(
-					`<path d="${percorso(fuori)} ${percorso(dentro.slice().reverse())}" fill="${fill}" fill-rule="evenodd"/>`
-				);
+		// fantasia: un motivo per lato, orientato lungo il lato
+		const conFantasia = fet.fantasia?.asset
+			? sag.bordi.flatMap((b, j) => {
+					if (!lati.includes(b.lato)) return [];
+					const { u, n: nb } = assi(b, sag);
+					const o = { x: b.a.x + nb.x * d, y: b.a.y + nb.y * d };
+					const riempi = motivo(fet.fantasia, nome, `${id}-fm${n}-${j}`, lungoIlBordo(u, nb, o));
+					return riempi ? [{ b, j, riempi }] : [];
+				})
+			: [];
+		if (conFantasia.length) {
+			const base = colori[0]?.hex && HEX.test(colori[0].hex) ? colori[0].hex : null;
+			const fuori = rientra(
+				sag,
+				sag.bordi.map((b) => (lati.includes(b.lato) ? d : 0))
+			);
+			const dentro = rientra(
+				sag,
+				sag.bordi.map((b) => (lati.includes(b.lato) ? d + w : 0))
+			);
+			const k = sag.bordi.length;
+			for (const { b, j, riempi } of conFantasia) {
+				// "incrociato": banda dritta; "angolo": il pezzo di cornice di questo lato
+				const pezzo =
+					incrocio === 'incrociato'
+						? bandaDritta(b, sag, d, d + w)
+						: [fuori[j], fuori[(j + 1) % k], dentro[(j + 1) % k], dentro[j]];
+				if (base) parti.push(`<path d="${percorso(pezzo)}" fill="${base}"/>`);
+				parti.push(`<path d="${percorso(pezzo)}" fill="${riempi}"/>`);
 			}
-		});
+		} else
+			colori.forEach((c, k) => {
+				const fill = colore(c, colori.length > 1 ? `${nome}, colore ${k + 1}` : nome);
+				const d0 = d + k * ws;
+				const d1 = d0 + ws;
+				if (incrocio === 'incrociato') {
+					for (const b of sag.bordi.filter((b) => lati.includes(b.lato))) {
+						parti.push(`<path d="${percorso(bandaDritta(b, sag, d0, d1))}" fill="${fill}"/>`);
+					}
+				} else {
+					const fuori = rientra(
+						sag,
+						sag.bordi.map((b) => (lati.includes(b.lato) ? d0 : 0))
+					);
+					const dentro = rientra(
+						sag,
+						sag.bordi.map((b) => (lati.includes(b.lato) ? d1 : 0))
+					);
+					parti.push(
+						`<path d="${percorso(fuori)} ${percorso(dentro.slice().reverse())}" fill="${fill}" fill-rule="evenodd"/>`
+					);
+				}
+			});
 		corpo.push(`<g${clip}>${parti.join('')}</g>`);
 	});
 

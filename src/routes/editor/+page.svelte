@@ -13,6 +13,7 @@
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
 	import { cambiaForma, nuovoDesign } from '#lib/design/nuovo.ts';
 	import { renderDesign } from '#lib/design/render.ts';
+	import { TILE, richiediTile } from '#lib/design/tile.svelte.ts';
 	import { DEFAULT, normalizzaDesign, type Design, type Forma } from '#lib/design/schema.ts';
 
 	// Contesto: un fazzolettone esistente (?fazzolettone=id) o uno nuovo per un gruppo (?gruppo=id)
@@ -113,8 +114,9 @@
 	}
 
 	const forma = $derived<Forma>(design.forma ?? DEFAULT.forma);
-	const fronte = $derived(renderDesign(design, { faccia: 'fronte', id: 'ed-f' }));
-	const retro = $derived(renderDesign(design, { faccia: 'retro', id: 'ed-r' }));
+	const fronte = $derived(renderDesign(design, { faccia: 'fronte', id: 'ed-f', tile: TILE }));
+	const retro = $derived(renderDesign(design, { faccia: 'retro', id: 'ed-r', tile: TILE }));
+	$effect(() => richiediTile($state.snapshot(design) as typeof design));
 	const fileNome = $derived(
 		(nome || 'fazzolettone')
 			.toLowerCase()

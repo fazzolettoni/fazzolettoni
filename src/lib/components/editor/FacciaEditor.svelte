@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FantasiaEditor from './FantasiaEditor.svelte';
 	import ColoreInput from './ColoreInput.svelte';
 	import ElementoEditor from './ElementoEditor.svelte';
 	import LivelliFettucce from './LivelliFettucce.svelte';
@@ -21,7 +22,7 @@
 		const quanti = tipo === 'tinta_unita' ? 1 : 2;
 		while (f.colori.length < quanti) f.colori.push(nuovoColore());
 		if (tipo !== 'fantasia') f.colori.splice(quanti);
-		f.fantasia = tipo === 'fantasia' ? (f.fantasia ?? { descrizione: '' }) : null;
+		f.fantasia = tipo === 'fantasia' ? (f.fantasia ?? {}) : null;
 	}
 </script>
 
@@ -51,17 +52,11 @@
 			<span>destra</span><ColoreInput bind:colore={faccia.fondo.colori[1]} />
 		</div>
 	{:else}
-		<input
-			type="text"
-			class="testo"
-			placeholder="Descrizione della fantasia (es. scozzese)"
-			bind:value={
-				() => faccia.fondo.fantasia?.descrizione ?? '',
-				(v) => (faccia.fondo.fantasia = { descrizione: v })
-			}
-		/>
+		{#if faccia.fondo.fantasia}<FantasiaEditor bind:fantasia={faccia.fondo.fantasia} />{/if}
 		<p class="nota">
-			Le fantasie sono ancora rese in modo indicativo. Il primo colore è lo sfondo.
+			{faccia.fondo.fantasia?.asset
+				? 'Il primo colore sta sotto l’immagine (si vede se ha parti trasparenti).'
+				: 'Senza immagine la fantasia è resa in modo indicativo. Il primo colore è lo sfondo.'}
 		</p>
 		{#each faccia.fondo.colori as _, k (k)}
 			<ColoreInput
@@ -139,13 +134,6 @@
 		align-items: center;
 		font-size: 0.8rem;
 		color: #666;
-	}
-	.testo {
-		font: inherit;
-		font-size: 0.9rem;
-		padding: 0.3rem 0.4rem;
-		border: 1px solid #ccc;
-		border-radius: 5px;
 	}
 	.nota {
 		margin: 0;
