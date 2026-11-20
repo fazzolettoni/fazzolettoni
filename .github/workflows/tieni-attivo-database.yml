@@ -1,0 +1,29 @@
+# I progetti Supabase gratuiti vanno in pausa dopo 7 giorni senza attività.
+# Una lettura ogni 3 giorni basta a tenerlo attivo. Se la lettura fallisce
+# (per esempio perché il progetto è già in pausa) il job fallisce e GitHub
+# manda un'email: in quel caso si riattiva dalla dashboard di Supabase.
+name: Tieni attivo il database
+
+on:
+  schedule:
+    - cron: '17 6 */3 * *' # ogni 3 giorni alle 6:17 UTC
+  workflow_dispatch: # per lanciarla a mano dalla scheda Actions
+
+permissions: {}
+
+jobs:
+  lettura:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Legge una riga dal database
+        # Valori pubblici (il sito li manda già a ogni browser): non servono secret
+        env:
+          URL: https://iolgwjakyjqdxtwjmbqm.supabase.co
+          CHIAVE: sb_publishable_6Gv-3m07hjxCtIWhuBqYvg_uQRc-E1V
+        run: |
+          codice=$(curl -sS -o risposta.json -w '%{http_code}' \
+            "$URL/rest/v1/associazioni?select=sigla&limit=1" \
+            -H "apikey: $CHIAVE")
+          echo "Risposta $codice: $(cat risposta.json)"
+          test "$codice" = 200
