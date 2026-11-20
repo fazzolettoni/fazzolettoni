@@ -33,6 +33,7 @@ npm install
 npm run db:avvia                 # database locale (il primo avvio scarica le immagini)
 cp .env.example .env.local       # poi incolla i valori di: npx supabase status -o env
 npm run seed:sicilia             # carica le schede siciliane (richiede data/sicilia/grezzi.json)
+npx tsx --env-file=.env.local scripts/indirizzi-sicilia.ts   # sede e zona dei gruppi siciliani (data/sicilia/indirizzi.tsv); --scrivi per salvare
 npm run dev                      # http://localhost:5173
 ```
 

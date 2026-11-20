@@ -44,8 +44,66 @@
 			<input name="zona" value={dati.zona ?? ''} placeholder="facoltativa" />
 		</label>
 	</div>
+
+	<fieldset>
+		<legend>Sede</legend>
+		<div class="indirizzo">
+			<label class="via">
+				Indirizzo
+				<input name="via" value={dati.indirizzo?.via ?? ''} placeholder="es. Via Roma" />
+			</label>
+			<label>
+				Civico
+				<input name="civico" value={dati.indirizzo?.civico ?? ''} />
+			</label>
+			<label>
+				Comune
+				<input name="comune" value={dati.indirizzo?.comune ?? ''} />
+			</label>
+			<label>
+				CAP
+				<input name="cap" value={dati.indirizzo?.cap ?? ''} inputmode="numeric" maxlength="5" />
+			</label>
+			<label>
+				Provincia
+				<input
+					name="provincia"
+					value={dati.indirizzo?.provincia ?? ''}
+					placeholder="es. CT"
+					maxlength="2"
+				/>
+			</label>
+		</div>
+	</fieldset>
+
+	<div class="riga">
+		<label>
+			Anno di fondazione
+			<input
+				name="anno_fondazione"
+				value={dati.anno_fondazione ?? ''}
+				inputmode="numeric"
+				maxlength="4"
+				placeholder="es. 1974"
+			/>
+		</label>
+		<label>
+			Anno di chiusura
+			<input
+				name="anno_chiusura"
+				value={dati.anno_chiusura ?? ''}
+				inputmode="numeric"
+				maxlength="4"
+				placeholder="vuoto se è in attività"
+			/>
+		</label>
+	</div>
 	<label class="check">
-		<input type="checkbox" name="attivo" checked={dati.attivo ?? true} /> il gruppo è attivo
+		<input
+			type="checkbox"
+			name="chiuso_senza_anno"
+			checked={dati.attivo === false && !dati.anno_chiusura}
+		/> il gruppo ha chiuso, ma non si sa in che anno
 	</label>
 
 	<fieldset>
@@ -94,6 +152,19 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 0.8rem;
+	}
+	.indirizzo {
+		display: grid;
+		grid-template-columns: 3fr 1fr;
+		gap: 0.6rem 0.8rem;
+	}
+	@media (min-width: 560px) {
+		.indirizzo {
+			grid-template-columns: 4fr 1fr 1.2fr;
+		}
+		.indirizzo .via {
+			grid-column: span 2;
+		}
 	}
 	input,
 	select {

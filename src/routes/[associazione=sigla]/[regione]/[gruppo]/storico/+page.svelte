@@ -16,7 +16,8 @@
 	</p>
 	<h1>Storico del gruppo</h1>
 	<p class="nota">
-		Nome, regione, zona e link. Le modifiche ai fazzolettoni hanno uno storico proprio.
+		Nome, regione, zona, sede, anni di attività e link. Le modifiche ai fazzolettoni hanno uno
+		storico proprio.
 	</p>
 	{#if form?.errore}<p class="errore">{form.errore}</p>{/if}
 	{#if page.url.searchParams.get('ripristinata')}

@@ -2,6 +2,7 @@
 	import Disegno from '#lib/components/Disegno.svelte';
 	import SchedaFazzolettone from '#lib/components/SchedaFazzolettone.svelte';
 	import { percorsoFazzolettone, percorsoGruppo, testoPeriodo } from '#lib/supabase/dati.ts';
+	import { testoAttivita, testoIndirizzo } from '#lib/gruppi.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -10,6 +11,11 @@
 	const inUso = $derived(g.fazzolettoni.filter((f) => data.inUso.includes(f.id)));
 	const altri = $derived(g.fazzolettoni.filter((f) => !data.inUso.includes(f.id)));
 	const link = $derived(g.rev?.dati.link ?? []);
+	const dati = $derived(g.rev?.dati ?? null);
+	const indirizzo = $derived(testoIndirizzo(dati?.indirizzo));
+	const attivita = $derived(
+		testoAttivita(dati ? { ...dati, attivo: g.attivo } : { attivo: g.attivo })
+	);
 </script>
 
 <svelte:head><title>{g.nome} · {g.associazione.toUpperCase()} · Fazzolettoni</title></svelte:head>
@@ -23,7 +29,11 @@
 			<h1>{g.nome}</h1>
 			<p class="meta">
 				{g.associazione.toUpperCase()} · {g.regione}{#if g.zona}{` · zona ${g.zona}`}{/if}
-				{#if !g.attivo}<span class="et">non più attivo</span>{/if}
+			</p>
+			<p class="meta">
+				<span class:chiuso={!g.attivo}>{attivita}</span>{#if indirizzo}<br /><span class="sede"
+						>{indirizzo}</span
+					>{/if}
 			</p>
 			{#if link.length}
 				<p class="link">
@@ -110,6 +120,9 @@
 	h1 {
 		margin: 0.3rem 0 0.2rem;
 	}
+	.chiuso {
+		color: #8a5408;
+	}
 	.meta,
 	.link {
 		margin: 0;
@@ -121,14 +134,6 @@
 		gap: 0.9rem;
 		align-items: center;
 		font-size: 0.9rem;
-	}
-	.et {
-		font-size: 0.72rem;
-		padding: 0.05rem 0.5rem;
-		border-radius: 999px;
-		background: #ddd;
-		color: #555;
-		margin-left: 0.3rem;
 	}
 	.principale {
 		background: #fff;

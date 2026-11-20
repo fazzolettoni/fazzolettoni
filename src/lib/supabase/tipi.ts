@@ -23,11 +23,29 @@ export interface Link {
 	url: string;
 }
 
+/** Sede del gruppo. */
+export interface Indirizzo {
+	via?: string | null;
+	civico?: string | null;
+	cap?: string | null;
+	comune?: string | null;
+	/** Sigla della provincia, es. "CT". */
+	provincia?: string | null;
+}
+
 export interface DatiGruppo {
 	nome: string;
 	regione: string;
 	zona?: string | null;
+	/**
+	 * false = il gruppo ha chiuso. Si ricava da anno_chiusura; senza anno può valere false solo
+	 * se si sa che ha chiuso ma non quando.
+	 */
 	attivo?: boolean;
+	indirizzo?: Indirizzo | null;
+	anno_fondazione?: number | null;
+	/** Vuoto = il gruppo è in attività (salvo attivo: false, chiuso in un anno non noto). */
+	anno_chiusura?: number | null;
 	link?: Link[];
 }
 

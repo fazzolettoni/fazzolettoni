@@ -46,7 +46,15 @@ const NOMI: Record<string, string> = {
 	attivo: 'attivo',
 	link: 'link',
 	url: 'link',
-	nota: 'descrizione'
+	nota: 'descrizione',
+	indirizzo: 'sede',
+	via: 'indirizzo',
+	civico: 'civico',
+	cap: 'CAP',
+	comune: 'comune',
+	provincia: 'provincia',
+	anno_fondazione: 'anno di fondazione',
+	anno_chiusura: 'anno di chiusura'
 };
 
 const ELENCHI: Record<string, string> = {

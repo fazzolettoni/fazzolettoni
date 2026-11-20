@@ -1,6 +1,7 @@
 import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
 import { caricaGruppoPerId, percorsoGruppo } from '#lib/supabase/dati.ts';
-import type { DatiGruppo, Link } from '#lib/supabase/tipi.ts';
+import type { DatiGruppo, Indirizzo, Link } from '#lib/supabase/tipi.ts';
+import { annoValido } from '#lib/gruppi.ts';
 
 const TIPI_LINK = ['sito', 'scoutwiki', 'facebook', 'instagram', 'altro'];
 
@@ -19,12 +20,37 @@ export function leggiModulo(
 		if (!/^https?:\/\/[^\s]+$/.test(urls[i])) return { errore: `Link non valido: ${urls[i]}` };
 		link.push({ tipo: TIPI_LINK.includes(tipi[i]) ? tipi[i] : 'altro', url: urls[i] });
 	}
+	const testo = (k: string) => String(form.get(k) ?? '').trim() || null;
+	const anno = (k: string): number | null | 'errore' => {
+		const t = testo(k);
+		if (!t) return null;
+		const n = Number(t);
+		return annoValido(n) ? n : 'errore';
+	};
+	const fondazione = anno('anno_fondazione');
+	const chiusura = anno('anno_chiusura');
+	if (fondazione === 'errore' || chiusura === 'errore')
+		return { errore: 'Gli anni vanno scritti per intero, es. 1974' };
+	if (fondazione && chiusura && chiusura < fondazione)
+		return { errore: "L'anno di chiusura viene prima di quello di fondazione" };
+	const indirizzo: Indirizzo = {
+		via: testo('via'),
+		civico: testo('civico'),
+		cap: testo('cap'),
+		comune: testo('comune'),
+		provincia: testo('provincia')?.toUpperCase() ?? null
+	};
+	const conIndirizzo = Object.values(indirizzo).some(Boolean);
 	return {
 		dati: {
 			nome,
 			regione,
-			zona: String(form.get('zona') ?? '').trim() || null,
-			attivo: form.get('attivo') === 'on',
+			zona: testo('zona'),
+			// senza anno di chiusura il gruppo è attivo, salvo "chiuso, anno non noto"
+			attivo: !chiusura && form.get('chiuso_senza_anno') !== 'on',
+			indirizzo: conIndirizzo ? indirizzo : null,
+			anno_fondazione: fondazione,
+			anno_chiusura: chiusura,
 			link
 		},
 		commento: String(form.get('commento') ?? '')
