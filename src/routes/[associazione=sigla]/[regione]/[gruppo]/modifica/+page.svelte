@@ -12,7 +12,13 @@
 <main>
 	<p class="briciole"><a href={percorsoGruppo(g)}>← {g.nome}</a></p>
 	<h1>Modifica gruppo</h1>
-	<ModuloGruppo dati={g.rev?.dati ?? g} errore={form?.errore} testoBottone="Salva" />
+	<ModuloGruppo
+		dati={g.rev?.dati ?? g}
+		associazioni={data.associazioni}
+		associazione={g.associazione}
+		errore={form?.errore}
+		testoBottone="Salva"
+	/>
 </main>
 
 <style>

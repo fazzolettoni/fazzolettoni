@@ -68,6 +68,7 @@ export async function salvaGruppo(
 	const letto = leggiModulo(form);
 	const associazione = associazioneFissa ?? String(form.get('associazione') ?? '');
 	if ('errore' in letto) return fail(400, { errore: letto.errore });
+	if (!associazione) return fail(400, { errore: "Manca l'associazione" });
 	const { data, error } = await locals.supabase.rpc('salva_gruppo', {
 		p_id: id,
 		p_associazione: associazione,

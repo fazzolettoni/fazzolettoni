@@ -7,7 +7,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	if (!locals.utente) redirect(303, `/accedi?poi=${encodeURIComponent(url.pathname)}`);
 	const g = await caricaGruppo(locals.supabase, params.associazione, params.regione, params.gruppo);
 	if (!g) error(404, 'Gruppo non trovato');
-	return { gruppo: g };
+	const { data } = await locals.supabase.from('associazioni').select('sigla, nome').order('sigla');
+	return { gruppo: g, associazioni: data ?? [] };
 };
 
 export const actions: Actions = {
@@ -20,6 +21,7 @@ export const actions: Actions = {
 			params.gruppo
 		);
 		if (!g) error(404, 'Gruppo non trovato');
-		return salvaGruppo(event, g.id, g.associazione);
+		// l'associazione arriva dal modulo: si può cambiare
+		return salvaGruppo(event, g.id, null);
 	}
 };

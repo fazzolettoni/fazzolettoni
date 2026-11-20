@@ -4,12 +4,15 @@
 	let {
 		dati,
 		associazioni,
+		associazione,
 		errore,
 		testoBottone
 	}: {
 		dati: Partial<DatiGruppo>;
-		/** Se presente, mostra la scelta dell'associazione (solo per i gruppi nuovi). */
+		/** Le associazioni tra cui scegliere. */
 		associazioni?: { sigla: string; nome: string }[];
+		/** Quella attuale, per un gruppo esistente. */
+		associazione?: string;
 		errore?: string;
 		testoBottone: string;
 	} = $props();
@@ -24,10 +27,13 @@
 	{#if associazioni}
 		<label>
 			Associazione
-			<select name="associazione" required>
+			<select name="associazione" required value={associazione ?? dati.associazione}>
 				{#each associazioni as a}<option value={a.sigla}>{a.sigla.toUpperCase()} – {a.nome}</option
 					>{/each}
 			</select>
+			{#if associazione}<span class="nota"
+					>Cambiandola cambia anche l'indirizzo della pagina: quello vecchio continua a funzionare.</span
+				>{/if}
 		</label>
 	{/if}
 	<label>

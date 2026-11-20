@@ -48,6 +48,7 @@ const NOMI: Record<string, string> = {
 	url: 'link',
 	nota: 'descrizione',
 	indirizzo: 'sede',
+	associazione: 'associazione',
 	via: 'indirizzo',
 	civico: 'civico',
 	cap: 'CAP',

@@ -36,6 +36,8 @@ export interface Indirizzo {
 export interface DatiGruppo {
 	nome: string;
 	regione: string;
+	/** Sigla, es. "agesci". Scritta nei dati dal database a ogni salvataggio. */
+	associazione?: string;
 	zona?: string | null;
 	/**
 	 * false = il gruppo ha chiuso. Si ricava da anno_chiusura; senza anno può valere false solo

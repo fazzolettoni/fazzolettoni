@@ -94,7 +94,14 @@ export async function redirectStorico(
 		.select('entita, entita_id')
 		.eq('percorso', percorso)
 		.maybeSingle();
-	if (!data) return null;
+	if (!data) {
+		// sottopagina di un gruppo che ha cambiato URL (nome, regione o associazione):
+		// /vecchio-gruppo/1974-1996 → /nuovo-gruppo/1974-1996
+		const parti = percorso.split('/');
+		if (parti.length <= 3) return null;
+		const gruppo = await redirectStorico(db, parti.slice(0, 3).join('/'));
+		return gruppo ? [gruppo, ...parti.slice(3)].join('/') : null;
+	}
 	if (data.entita === 'gruppo') {
 		const { data: g } = await db
 			.from('gruppi')
