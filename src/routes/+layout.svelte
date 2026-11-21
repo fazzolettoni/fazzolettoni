@@ -15,6 +15,7 @@
 		<a class="marchio" href="/">Fazzolettoni</a>
 		<a href="/modifiche">Ultime modifiche</a>
 		<a href="/nuovo-gruppo">Nuovo gruppo</a>
+		<a href="/progetto">Il progetto</a>
 		<span class="spazio"></span>
 		{#if data.profilo}
 			{#if data.profilo.ruolo !== 'utente'}<a href="/moderazione">Moderazione</a>{/if}
