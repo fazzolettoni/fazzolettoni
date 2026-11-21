@@ -35,6 +35,18 @@
 		<div class="anteprima" style:background-image="url({urlTile(fantasia.asset)})"></div>
 		<div class="riga">
 			<MisuraCm etichetta="Si ripete ogni" bind:mm={fantasia.larghezza_mm} />
+			<label class="gradi">
+				<span>Rotazione</span>
+				<span
+					><input
+						type="number"
+						step="5"
+						bind:value={
+							() => fantasia.rotazione ?? 0, (v) => (fantasia.rotazione = Number(v) || null)
+						}
+					/> °</span
+				>
+			</label>
 			<button type="button" class="link" onclick={() => (fantasia.asset = null)}
 				>togli l'immagine</button
 			>
@@ -78,6 +90,21 @@
 		align-items: flex-end;
 		gap: 0.8rem;
 		flex-wrap: wrap;
+	}
+	.gradi {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		font-size: 0.8rem;
+		color: #555;
+	}
+	.gradi input {
+		width: 4rem;
+		font: inherit;
+		font-size: 0.9rem;
+		padding: 0.25rem 0.35rem;
+		border: 1px solid #ccc;
+		border-radius: 5px;
 	}
 	input[type='text'] {
 		font: inherit;

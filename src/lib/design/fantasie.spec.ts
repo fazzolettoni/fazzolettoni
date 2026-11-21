@@ -37,6 +37,21 @@ describe('fantasie', () => {
 		}
 	});
 
+	it('ruota il motivo: sul fondo da solo, sulle fettucce dopo l’allineamento al lato', () => {
+		const d = fettucciaConFantasia('angolo');
+		d.fronte.fettucce[0].fantasia!.rotazione = 45;
+		expect(renderDesign(d, { tile: TILE }).svg).toMatch(
+			/patternTransform="matrix\([^)]*\) rotate\(45\)"/
+		);
+		d.fronte.fettucce = [];
+		d.fronte.fondo = {
+			tipo: 'fantasia',
+			colori: [],
+			fantasia: { asset: ASSET, larghezza_mm: 50, rotazione: 30 }
+		};
+		expect(renderDesign(d, { tile: TILE }).svg).toContain('patternTransform="rotate(30)"');
+	});
+
 	it("senza l'immagine caricata usa i colori e lo segnala", () => {
 		const { svg, avvisi } = renderDesign(fettucciaConFantasia('angolo'));
 		expect(svg).not.toContain('<pattern id="fz-fm');

@@ -170,10 +170,16 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 ### Fantasia
 
 ```jsonc
-{ "asset": "3f9a…c1.svg", "larghezza_mm": 50, "descrizione": "scozzese rosso e verde" }
+{
+	"asset": "3f9a…c1.svg",
+	"larghezza_mm": 50,
+	"rotazione": 45,
+	"descrizione": "scozzese rosso e verde"
+}
 ```
 
 - Una fantasia (tartan, quadretti…) è un'**immagine che si ripete su una griglia rettangolare**: chi la disegna la prepara già per ripetersi senza giunture. Si usa sul fondo (`tipo: "fantasia"`) e sulle fettucce (Trapani 6: fettuccia scozzese).
+- `rotazione` gira il motivo in gradi (Trapani 6: tartan a 45°); sulle fettucce è relativa al lato.
 - `larghezza_mm` è la **larghezza reale di una ripetizione** sulla stoffa; l'altezza segue le proporzioni dell'immagine. Se manca si usano 50 mm, con un avviso.
 - Sulle fettucce il motivo **segue la direzione di ogni lato** (asse x lungo il lato, dal bordo verso l'interno); con le fettucce unite ad angolo ogni lato ha il suo pezzo, tagliato a 45°. Una fettuccia stretta mostra solo una fascia della tile, come una stoffa tagliata. I colori della fettuccia restano come riserva e come fondo sotto le parti trasparenti.
 - Le immagini stanno nello storage `tile` (PNG, JPG, WebP o SVG, massimo 1 MB). Il **nome del file è l'impronta SHA-256 del contenuto**: un file non si sovrascrive mai, quindi ogni revisione mostra sempre la tile che aveva (è la risposta al versioning degli asset, §11).

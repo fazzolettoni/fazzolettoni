@@ -31,6 +31,8 @@ export interface Fantasia {
 	asset?: string | null;
 	/** Ogni quanti mm si ripete in larghezza (l'altezza segue le proporzioni dell'immagine). */
 	larghezza_mm?: number | null;
+	/** Rotazione del motivo in gradi (es. 45 per un tartan in diagonale). Sulle fettucce è relativa al lato. */
+	rotazione?: number | null;
 	descrizione?: string | null;
 }
 

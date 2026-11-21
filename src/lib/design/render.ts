@@ -114,7 +114,9 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 		}
 		const rapporto = num(t.altezza, 1) / num(t.larghezza, 1);
 		const h = l * (Number.isFinite(rapporto) && rapporto > 0 ? rapporto : 1);
-		const tr = trasforma ? ` patternTransform="${trasforma}"` : '';
+		const gradi = num(fant.rotazione, 0) % 360;
+		const tutto = [trasforma, gradi ? `rotate(${gradi})` : ''].filter(Boolean).join(' ');
+		const tr = tutto ? ` patternTransform="${tutto}"` : '';
 		defs.push(
 			`<pattern id="${idMotivo}" patternUnits="userSpaceOnUse" width="${l}" height="${h}"${tr}>` +
 				`<image href="${t.href}" width="${l}" height="${h}" preserveAspectRatio="none"/></pattern>`
