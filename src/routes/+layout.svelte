@@ -13,11 +13,11 @@
 {#if page.url.pathname !== '/alpha'}
 	<nav class="barra-sito">
 		<a class="marchio" href="/">Fazzolettoni</a>
-		<a href="/modifiche">Ultime modifiche</a>
-		<a href="/nuovo-gruppo">Nuovo gruppo</a>
 		<a href="/progetto">Il progetto</a>
 		<span class="spazio"></span>
 		{#if data.profilo}
+			<a href="/nuovo-gruppo">Nuovo gruppo</a>
+			<a href="/modifiche">Ultime modifiche</a>
 			{#if data.profilo.ruolo !== 'utente'}<a href="/moderazione">Moderazione</a>{/if}
 			<a href="/profilo">{data.profilo.nome}</a>
 			<form method="POST" action="/esci"><button>Esci</button></form>

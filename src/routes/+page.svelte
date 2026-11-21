@@ -19,12 +19,6 @@
 <svelte:head><title>Fazzolettoni</title></svelte:head>
 
 <main>
-	<h1>Fazzolettoni dei gruppi scout</h1>
-	<p class="intro">
-		Un archivio aperto dei fazzolettoni scout italiani. Chiunque può aggiungere o correggere un
-		gruppo: ogni modifica resta nello storico.
-	</p>
-
 	<div class="filtri">
 		<input type="search" placeholder="Cerca un gruppo…" bind:value={cerca} />
 		<select bind:value={associazione}>
@@ -32,7 +26,7 @@
 			{#each associazioni as a}<option value={a}>{a.toUpperCase()}</option>{/each}
 		</select>
 		<span class="conta">{visibili.length} gruppi</span>
-		<a class="nuovo" href="/nuovo-gruppo">+ Aggiungi un gruppo</a>
+		{#if data.profilo}<a class="nuovo" href="/nuovo-gruppo">+ Aggiungi un gruppo</a>{/if}
 	</div>
 
 	<ul class="griglia">
@@ -64,13 +58,6 @@
 		max-width: 1300px;
 		margin: 0 auto;
 		padding: 1.5rem;
-	}
-	h1 {
-		margin: 0 0 0.3rem;
-	}
-	.intro {
-		color: #555;
-		margin: 0 0 1.2rem;
 	}
 	.filtri {
 		display: flex;

@@ -8,23 +8,14 @@
 	<h1>Il progetto</h1>
 	<p>
 		Fazzolettoni è un archivio aperto dei fazzolettoni dei gruppi scout italiani: colori, fettucce,
-		simboli e la loro storia nel tempo. È un progetto volontario e <strong
-			>senza scopo di lucro</strong
-		>.
+		simboli e la loro storia nel tempo. È un progetto volontario e senza scopo di lucro.
 	</p>
 	<p>
-		Chiunque può contribuire: basta <a href="/accedi">iscriversi</a> per aggiungere un gruppo o correggere
-		un fazzolettone. Ogni modifica resta nello storico e si può sempre ripristinare.
+		Chiunque può contribuire: basta <a href="/accedi">iscriversi</a> per aggiungere e modificare gruppi
+		e fazzolettoni. Le modifiche sono visibili in tempo reale ma possono essere cambiate o eliminate dai
+		moderatori se ritenute errate o offensive.
 	</p>
-	<p>
-		Per domande, dubbi o suggerimenti scrivi a <a href="mailto:{EMAIL}">{EMAIL}</a>.
-	</p>
-	<p class="nota">
-		I disegni e i contenuti sono pubblicati con licenza
-		<a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noreferrer"
-			>CC BY 4.0</a
-		>. I nomi e i simboli delle associazioni appartengono alle rispettive associazioni.
-	</p>
+	<p>Per domande, dubbi o suggerimenti scrivi a <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
 </main>
 
 <style>
@@ -39,12 +30,5 @@
 	}
 	a {
 		color: #2a5db0;
-	}
-	.nota {
-		font-size: 0.85rem;
-		color: #666;
-		border-top: 1px solid #e3e1dc;
-		padding-top: 0.8rem;
-		margin-top: 1.5rem;
 	}
 </style>
