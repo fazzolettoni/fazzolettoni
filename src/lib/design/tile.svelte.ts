@@ -16,11 +16,13 @@ export const urlTile = (asset: string) =>
 
 /** Le tile usate da un design (fondo e fettucce, fronte e retro). */
 export function assetDi(d: Design | null | undefined): string[] {
-	const fantasie: (Fantasia | null | undefined)[] = [];
+	const fantasie: (Pick<Fantasia, 'asset'> | null | undefined)[] = [];
 	for (const f of [d?.fronte, d?.retro]) {
 		if (!f) continue;
 		fantasie.push(f.fondo?.fantasia);
 		for (const fet of f.fettucce ?? []) fantasie.push(fet.fantasia);
+		// loghi e toppe usano lo stesso storage
+		for (const el of f.elementi ?? []) if (el.tipo !== 'scritta') fantasie.push(el);
 	}
 	return [
 		...new Set(fantasie.map((x) => x?.asset).filter((a): a is string => !!a && ASSET_TILE.test(a)))

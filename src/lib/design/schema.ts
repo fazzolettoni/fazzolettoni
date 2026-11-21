@@ -72,8 +72,10 @@ export interface Fettuccia {
 
 export interface Elemento {
 	tipo: 'logo' | 'toppa' | 'scritta';
-	/** Riferimento a un asset caricato: "asset-id@versione". Nel PoC non esiste ancora. */
+	/** Immagine di logo o toppa: file nello storage (impronta del contenuto + estensione, come le tile). */
 	asset?: string | null;
+	/** Larghezza reale in mm (l'altezza segue le proporzioni dell'immagine). Se manca si usa `scala`. */
+	larghezza_mm?: number | null;
 	/** Descrizione testuale (usata come segnaposto se l'asset manca). */
 	descrizione?: string | null;
 	/** Per le scritte. */
@@ -81,7 +83,7 @@ export interface Elemento {
 	colore?: Colore | null;
 	/** Coordinate normalizzate 0–1 sul riquadro della faccia. */
 	posizione: { x: number; y: number };
-	/** Dimensione relativa al lato più corto del riquadro (0–1). */
+	/** Dimensione relativa al lato più corto del riquadro (0–1): per le scritte, e per i dati vecchi. */
 	scala: number;
 	rotazione?: number;
 }

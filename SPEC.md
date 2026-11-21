@@ -197,13 +197,17 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 ```jsonc
 {
 	"tipo": "logo", // "logo" | "toppa" | "scritta"
-	"asset": "asset-id@versione", // per logo/toppa
+	"asset": "3f9a…c1.png", // per logo/toppa: file nello storage, come le tile
+	"larghezza_mm": 80, // per logo/toppa: larghezza reale; l'altezza segue le proporzioni
 	"testo": null, // per scritta
-	"posizione": { "x": 0.5, "y": 0.2 }, // coordinate normalizzate 0–1 sulla faccia
-	"scala": 0.3,
+	"posizione": { "x": 0.5, "y": 0.2 }, // centro, in coordinate normalizzate 0–1 sulla faccia
+	"scala": 0.3, // dimensione relativa: per le scritte e per i dati senza larghezza_mm
 	"rotazione": 0
 }
 ```
+
+- Loghi e toppe usano **lo stesso caricamento delle fantasie**: stesso storage, nome del file uguale all'impronta del contenuto, stessi formati e limiti, per ora solo amministratori. Nel disegno (e quindi in 3D ed export) l'immagine entra come data URI.
+- Senza immagine restano un segnaposto tratteggiato della stessa misura, con un avviso.
 
 ---
 

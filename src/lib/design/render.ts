@@ -305,14 +305,24 @@ export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 				`<text x="${cx}" y="${cy}" font-size="${r}" font-family="sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="middle" fill="${fill}"${rot}>${esc(String(el.testo ?? ''))}</text>`
 			);
 		} else {
-			// Nel PoC gli asset non esistono ancora: segnaposto
-			avvisi.push(
-				`${el.tipo === 'logo' ? 'Logo' : 'Toppa'}${el.descrizione ? ` "${el.descrizione}"` : ''}: immagine non ancora caricata`
-			);
-			corpo.push(
-				`<g${rot}><circle cx="${cx}" cy="${cy}" r="${r}" fill="#ffffff" fill-opacity="0.75" stroke="#555" stroke-width="2" stroke-dasharray="8 6"/>` +
-					`<text x="${cx}" y="${cy}" font-size="${r / 3}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle" fill="#333">${esc(String(el.tipo))}</text></g>`
-			);
+			const nome = `${el.tipo === 'logo' ? 'Logo' : 'Toppa'}${el.descrizione ? ` "${el.descrizione}"` : ''}`;
+			// misura reale se c'è, altrimenti quella relativa dei dati vecchi
+			const w = num(el.larghezza_mm, 0) > 0 ? num(el.larghezza_mm, 0) : 2 * r;
+			const t = el.asset && ASSET_TILE.test(el.asset) ? opzioni.tile?.[el.asset] : undefined;
+			if (t && DATA_URI.test(t.href)) {
+				const rapporto = num(t.altezza, 1) / num(t.larghezza, 1);
+				const h = w * (Number.isFinite(rapporto) && rapporto > 0 ? rapporto : 1);
+				corpo.push(
+					`<image href="${t.href}" x="${cx - w / 2}" y="${cy - h / 2}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"${rot}/>`
+				);
+			} else {
+				avvisi.push(`${nome}: ${el.asset ? 'immagine non ancora caricata' : 'manca l’immagine'}`);
+				const rr = w / 2;
+				corpo.push(
+					`<g${rot}><circle cx="${cx}" cy="${cy}" r="${rr}" fill="#ffffff" fill-opacity="0.75" stroke="#555" stroke-width="2" stroke-dasharray="8 6"/>` +
+						`<text x="${cx}" y="${cy}" font-size="${rr / 3}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle" fill="#333">${esc(String(el.tipo))}</text></g>`
+				);
+			}
 		}
 	});
 

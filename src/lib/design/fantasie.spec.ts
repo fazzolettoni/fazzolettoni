@@ -76,4 +76,28 @@ describe('fantasie', () => {
 		expect(svg).not.toContain('script');
 		expect(svg).not.toContain('<pattern id="fz-fm');
 	});
+
+	it('loghi e toppe: immagine alla misura reale, con le proporzioni del file', () => {
+		const d = fettucciaConFantasia('angolo');
+		d.fronte.fettucce = [];
+		d.fronte.elementi = [
+			{
+				tipo: 'toppa',
+				asset: ASSET,
+				larghezza_mm: 80,
+				posizione: { x: 0.5, y: 0.5 },
+				scala: 0.2,
+				rotazione: 0
+			}
+		];
+		const { svg, avvisi } = renderDesign(d, { tile: TILE });
+		expect(svg).toMatch(
+			/<image href="data:image\/svg\+xml;base64,[^"]+" x="[\d.]+" y="[\d.]+" width="80" height="40"/
+		);
+		expect(avvisi).toEqual([]);
+		// senza immagine caricata: segnaposto della stessa misura
+		const senza = renderDesign(d);
+		expect(senza.svg).toContain('r="40"');
+		expect(senza.avvisi.join()).toContain('non ancora caricata');
+	});
 });
