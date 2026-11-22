@@ -1,5 +1,5 @@
 /**
- * Le schede della Sicilia per le pagine di lavoro (/sicilia, /prova-3d, editor ?sicilia=).
+ * Le schede della Sicilia per i test (src/lib/import/sicilia.spec.ts).
  * I dati grezzi non sono nel repository: se il file manca (per esempio nella build online) le
  * schede sono semplicemente vuote. Solo per Vite e Vitest; gli script usano index.ts.
  */

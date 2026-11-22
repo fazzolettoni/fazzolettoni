@@ -290,7 +290,7 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 - ✅ **Permesso ottenuto** (novembre 2026) dal Centro regionale studi e documentazione di AGESCI Sicilia: il sito è pubblico.
 - **Citazione concordata**, su ogni fazzolettone importato: «Tabella curata da A.F. Scalini (Centro regionale studi e documentazione - Agesci Sicilia)», con il link alla loro pagina. Aggiornata su tutti con `scripts/citazione-sicilia.ts` (una revisione nuova per fazzolettone, solo dove serviva).
 - Le sedi e le zone dei gruppi vengono dall'elenco gruppi AGESCI Sicilia (`scripts/indirizzi-sicilia.ts`).
-- ✅ Fatto (`/sicilia`): `scripts/sicilia/estrai.py` legge la pagina e salva `data/sicilia/grezzi.json`; `src/lib/import/` unisce e converte. 101 fazzolettoni: 79 convertiti senza dubbi, 30 descrizioni libere interpretate a mano (`sicilia-manuali.ts`, con nota visibile), 22 da rivedere.
+- ✅ Fatto: `scripts/sicilia/estrai.py` legge la pagina e salva `data/sicilia/grezzi.json`; `src/lib/import/` unisce e converte. 101 fazzolettoni: 79 convertiti senza dubbi, 30 descrizioni libere interpretate a mano (`sicilia-manuali.ts`, con nota visibile), 22 da rivedere.
 - **La pagina ha due tabelle** con gli stessi gruppi e valori a volte diversi: si uniscono campo per campo, "dettagli" come fonte principale, e i disaccordi diventano conflitti visibili (20 gruppi).
 - Identità del gruppo = associazione + nome, confermato dai dati: "Palermo 6" esiste sia AGESCI sia FSE, "Messina 1" e "Giarre 1" sia AGESCI sia CNGEI.
 - Domande da portare ad AGESCI Sicilia:

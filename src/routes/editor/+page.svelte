@@ -9,7 +9,6 @@
 	import MisuraCm from '#lib/components/editor/MisuraCm.svelte';
 	import { STIMA_COLORI } from '#lib/design/colori.ts';
 	import { ESEMPI } from '#lib/design/esempi.ts';
-	import { SCHEDE_SICILIA } from '#lib/import/locale.ts';
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
 	import { cambiaForma, nuovoDesign } from '#lib/design/nuovo.ts';
 	import { renderDesign } from '#lib/design/render.ts';
@@ -44,9 +43,6 @@
 		const da = page.url.searchParams.get('da');
 		const es = da ? ESEMPI.find((e) => e.id === da) : undefined;
 		if (es) return { design: structuredClone(es.design), nome: es.gruppo };
-		const si = page.url.searchParams.get('sicilia');
-		const sc = si ? SCHEDE_SICILIA.find((s) => s.gruppo.id === si) : undefined;
-		if (sc) return { design: structuredClone(sc.conversione.design), nome: sc.gruppo.nome };
 		try {
 			const salvata = localStorage.getItem(CHIAVE_BOZZA);
 			if (salvata) return JSON.parse(salvata);

@@ -1,43 +1,56 @@
 # Fazzolettoni
 
-Portale open, in stile wiki, per raccogliere i fazzolettoni dei gruppi scout italiani.
-Specifica e decisioni: [SPEC.md](SPEC.md).
+Archivio aperto dei fazzolettoni dei gruppi scout italiani: colori, fettucce, simboli e la loro
+storia nel tempo. Progetto volontario e senza scopo di lucro.
 
-## Stato: fase 0 + editor visuale
+**Sito: https://fazzolettoni.vercel.app** · Contatti: archiviofazzolettoni@gmail.com
 
-Schema parametrico e renderer SVG, provati su 12 casi reali (AGESCI Sicilia e ScoutWiki).
+Ogni fazzolettone è descritto con dei parametri (forma, fondo, fettucce, loghi e toppe), non
+con una foto: da quella descrizione il sito disegna l'immagine, la scarica in SVG e PNG e la
+mostra indossata in 3D. Chiunque si iscriva può aggiungere e correggere gruppi e fazzolettoni,
+come in una wiki: ogni modifica resta nello storico e si può ripristinare.
 
-- `src/lib/design/schema.ts`: tipi del design (forma, fondo, fettucce, elementi)
-- `src/lib/design/geometria.ts`: sagome e calcoli geometrici (rientri, bande, tratti)
-- `src/lib/design/render.ts`: `design → SVG` + elenco degli avvisi
-- `src/lib/design/esempi.ts`: casi reali trascritti (da verificare sulle fonti)
-- `src/lib/design/export.ts`: download SVG e PNG dal browser
-- `src/routes/+page.svelte`: galleria con editor JSON live
-- `src/routes/editor/`: editor visuale (`/editor`, oppure `/editor?da=<id-esempio>`), con anteprima live, fettucce come livelli riordinabili, bozza salvata nel browser
-- `src/lib/components/editor/`: componenti dell'editor (colore, misura in cm, fettuccia, livelli, elementi, faccia)
-- `scripts/sicilia/estrai.py` → `data/sicilia/grezzi.json` → `src/lib/import/`: import della raccolta AGESCI Sicilia, visibile in `/sicilia`
+## Contribuire
 
-## Backend (Supabase)
+- **Dati** (gruppi, fazzolettoni, correzioni): direttamente sul sito, dopo l'iscrizione.
+- **Domande, idee, segnalazioni**: nelle Discussions e nelle Issues di questo repository, oppure
+  per email.
+- **Codice**: le pull request sono benvenute. Le scelte di progetto sono in [SPEC.md](SPEC.md).
 
-- `supabase/migrations/`: tabelle, regole di accesso e funzioni. Lo storico è append-only: ogni modifica, compreso un ripristino, è una nuova riga in `revisioni`. Si scrive solo tramite funzioni (`salva_gruppo`, `salva_fazzolettone`, `ripristina`, `imposta_ban`, `annulla_utente`…), mai direttamente nelle tabelle.
-- `src/hooks.server.ts`, `src/lib/supabase/`: client, tipi e letture comuni.
-- Pagine: `/` gruppi, `/<associazione>/<regione>/<gruppo>` (fazzolettone attuale e precedenti), `…/<periodo>` (un fazzolettone, `?rev=` per una versione passata), `…/storico`, `…/modifica`, `/nuovo-gruppo`, `/modifiche`, `/moderazione`, `/accedi`, `/profilo`.
-- Gli URL vecchi (gruppo rinominato, date corrette) restano validi come redirect (`slug_storici`).
+## Come è fatto
+
+- [SvelteKit](https://svelte.dev) (Svelte 5, TypeScript), pubblicato su Vercel.
+- [Supabase](https://supabase.com): database Postgres, accesso con link via email, storage
+  delle immagini.
+- [three.js](https://threejs.org) per la vista 3D.
+
+| Cartella                      | Contenuto                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/lib/design/`             | schema parametrico, geometria, renderer `design → SVG` (con l'elenco degli avvisi), esempi |
+| `src/lib/tre/`                | modello 3D e texture generate dal disegno                                                  |
+| `src/lib/components/`         | componenti delle pagine e dell'editor visuale                                              |
+| `src/routes/`                 | pagine: gruppi, fazzolettoni, storico, editor, moderazione                                 |
+| `src/lib/import/`, `scripts/` | import della raccolta AGESCI Sicilia e script di manutenzione                              |
+| `supabase/migrations/`        | tabelle, regole di accesso e funzioni                                                      |
+
+Lo storico è _append-only_: ogni modifica, compreso un ripristino, è una nuova riga della tabella
+`revisioni`, e si scrive solo tramite funzioni del database (`salva_gruppo`,
+`salva_fazzolettone`, `ripristina`…), mai direttamente nelle tabelle. Gli indirizzi vecchi di
+una pagina restano validi come redirect.
 
 ## Sviluppo
 
-Serve Docker Desktop avviato.
+Servono Node 24 o più recente e Docker Desktop avviato.
 
 ```sh
 npm install
-npm run db:avvia                 # database locale (il primo avvio scarica le immagini)
+npm run db:avvia                 # database locale (il primo avvio scarica le immagini Docker)
 cp .env.example .env.local       # poi incolla i valori di: npx supabase status -o env
-npm run seed:sicilia             # carica le schede siciliane (richiede data/sicilia/grezzi.json)
-npx tsx --env-file=.env.local scripts/indirizzi-sicilia.ts   # sede e zona dei gruppi siciliani (data/sicilia/indirizzi.tsv); --scrivi per salvare
 npm run dev                      # http://localhost:5173
 ```
 
-Le email di accesso in locale non partono: si leggono su http://127.0.0.1:54324. Dopo il primo accesso:
+In locale le email di accesso non partono: si leggono su http://127.0.0.1:54324. Dopo il primo
+accesso, per avere tutti i permessi:
 
 ```sh
 npm run ruolo -- tua@email.it amministratore
@@ -46,42 +59,50 @@ npm run ruolo -- tua@email.it amministratore
 Altri comandi:
 
 ```sh
-npm run db:reset                 # ricrea il database da zero (cancella anche gli utenti)
+npm test                         # test
+npm run check                    # controllo dei tipi
 npm run verifica:permessi        # controlla le regole di accesso sul database locale
-npm test         # test unitari
-npm run check    # controllo tipi
+npm run db:reset                 # ricrea il database locale da zero (cancella anche gli utenti)
 ```
 
-I file grezzi siciliani (`data/sicilia/grezzi.json`, `data/sicilia/indirizzi.tsv`) **non sono nel repository**: AGESCI Sicilia ha dato il permesso di pubblicare i dati nel sito, non di ridistribuire la loro tabella. Senza quei file `/sicilia` è vuota e alcuni test si saltano. Per generare `grezzi.json`:
+### Dati AGESCI Sicilia
+
+I file sorgente della raccolta siciliana (`data/sicilia/grezzi.json`,
+`data/sicilia/indirizzi.tsv`) **non sono nel repository**: AGESCI Sicilia ha dato il permesso di
+pubblicare i dati nel sito, non di ridistribuire la loro tabella. Senza quei file alcuni test si
+saltano. Chi ne ha bisogno per lo sviluppo può chiederli per email. Con i file al loro posto:
 
 ```sh
-curl -sL -o /tmp/sicilia.html https://sicilia.agesci.it/fazzolettoni/
-python3 -I scripts/sicilia/estrai.py /tmp/sicilia.html data/sicilia/grezzi.json
+npm run seed:sicilia                                           # carica le schede siciliane
+npx tsx --env-file=.env.local scripts/indirizzi-sicilia.ts     # sede e zona (--scrivi per salvare)
 ```
 
 ## Messa online
 
-Sito su Vercel, database su un progetto Supabase gratuito. Facoltativa: con `ALPHA_PASSWORD` impostata tutto il sito chiede una password (serviva per la alpha privata).
+1. **Supabase**: un progetto su supabase.com, poi
+   `npx supabase login`, `npx supabase link --project-ref <ref>` e `npx supabase db push`.
+2. **Vercel**: importa il repository e imposta `PUBLIC_SUPABASE_URL` e
+   `PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Ogni push su `main` pubblica una nuova versione.
+   Facoltativa: `ALPHA_PASSWORD` fa chiedere una password per tutto il sito.
+3. **Supabase → Authentication → URL Configuration**: _Site URL_ = l'indirizzo del sito, e tra
+   i _Redirect URLs_ `https://<indirizzo>/**`. Per le email di accesso serve un SMTP proprio
+   (Authentication → Emails): quello integrato scrive solo agli indirizzi del team.
+4. **Amministratore**: dopo il primo accesso,
+   `npx tsx --env-file=.env.produzione scripts/ruolo.ts <email> amministratore`
+   (`.env.produzione` con URL e chiave di servizio del progetto, mai su git).
 
-1. **Supabase**: crea un progetto su supabase.com (regione Europa). Poi, da terminale:
-   ```bash
-   npx supabase login
-   npx supabase link --project-ref <ref-del-progetto>
-   npx supabase db push
-   ```
-2. **Vercel**: importa il repository da vercel.com (accesso con GitHub) e imposta le variabili `PUBLIC_SUPABASE_URL` e `PUBLIC_SUPABASE_PUBLISHABLE_KEY` (Settings → Environment Variables). Ogni push su `main` pubblica una nuova versione.
-3. **Supabase → Authentication → URL Configuration**: _Site URL_ = l'indirizzo Vercel, e tra i _Redirect URLs_ `https://<indirizzo-vercel>/**`.
-4. **Dati Sicilia** (facoltativo): crea `.env.produzione` (ignorato da git) con `PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` del progetto online, poi:
-   ```bash
-   npx tsx --env-file=.env.produzione scripts/seed-sicilia.ts
-   ```
-5. **Amministratore**: accedi al sito, poi `npx tsx --env-file=.env.produzione scripts/ruolo.ts <email> amministratore`.
-
-Le email di accesso del servizio integrato di Supabase arrivano solo agli indirizzi del team del progetto e con un limite orario basso: per far iscrivere altre persone serve un SMTP proprio (es. Resend), da impostare in Authentication → Emails.
+Una GitHub Action legge il database ogni 3 giorni, perché i progetti Supabase gratuiti vanno in
+pausa dopo una settimana di inattività.
 
 ## Crediti
 
-- Dati dei fazzolettoni siciliani: Tabella curata da A.F. Scalini (Centro regionale studi e documentazione - Agesci Sicilia), https://sicilia.agesci.it/fazzolettoni/, pubblicati con il loro permesso.
-- Modello 3D del fazzolettone indossato: realizzato per il progetto (`static/modelli/fazzolettone.glb`). La texture originale del portafazzolettone, con il logo AGESCI, non viene usata.
-- Portafazzolettone: porta solo la sigla dell'associazione del gruppo; i nomi delle associazioni appartengono a loro.
-- Carattere Montserrat ExtraBold (pacchetto `@fontsource/montserrat`), licenza SIL Open Font License 1.1.
+- Dati dei fazzolettoni siciliani: Tabella curata da A.F. Scalini (Centro regionale studi e
+  documentazione - Agesci Sicilia), https://sicilia.agesci.it/fazzolettoni/, pubblicati con il
+  loro permesso.
+- Modello 3D del fazzolettone indossato: realizzato per il progetto
+  (`static/modelli/fazzolettone.glb`).
+- Il portafazzolettone porta solo la sigla dell'associazione del gruppo; nomi e simboli delle
+  associazioni appartengono alle rispettive associazioni.
+- Carattere Montserrat ExtraBold (`@fontsource/montserrat`), licenza SIL Open Font License 1.1.
+- I contenuti del sito (disegni e descrizioni) sono pubblicati con licenza
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.it).
