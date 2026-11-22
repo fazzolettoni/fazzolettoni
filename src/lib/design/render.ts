@@ -66,6 +66,18 @@ function idSicuro(s: string): string {
 	return s.replace(/[^a-zA-Z0-9_-]/g, '_');
 }
 
+/**
+ * Gli avvisi di tutto il fazzolettone: fronte e, se descritto, retro del quadrato.
+ * Senza `tile` (sul server) non si contano le immagini non ancora scaricate: lì nessuna lo è.
+ */
+export function avvisiDesign(design: Design, tile?: Record<string, TileCaricata>): string[] {
+	const tutti = renderDesign(design, { tile }).avvisi;
+	if (design.forma === 'quadrato' && design.retro)
+		tutti.push(...renderDesign(design, { faccia: 'retro', tile }).avvisi);
+	const unici = [...new Set(tutti)];
+	return tile ? unici : unici.filter((a) => !a.includes('non ancora caricata'));
+}
+
 export function renderDesign(design: Design, opzioni: Opzioni = {}): Risultato {
 	const faccia = opzioni.faccia ?? 'fronte';
 	const id = idSicuro(opzioni.id ?? 'fz');

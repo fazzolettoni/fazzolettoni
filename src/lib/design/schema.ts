@@ -36,11 +36,31 @@ export interface Fantasia {
 	descrizione?: string | null;
 }
 
+/**
+ * Tessuto del fondo o della fettuccia. Per ora è solo un dato; più avanti potrà dare al 3D
+ * lucentezza e trama (bump e reflection map).
+ */
+export type Materiale =
+	'cotone' | 'raso' | 'gabardine' | 'lana' | 'seta' | 'nylon' | 'poliestere' | 'misto_sintetico';
+
+export const MATERIALI: Record<Materiale, string> = {
+	cotone: 'Cotone',
+	raso: 'Raso',
+	gabardine: 'Gabardine',
+	lana: 'Lana',
+	seta: 'Seta',
+	nylon: 'Nylon',
+	poliestere: 'Poliestere',
+	misto_sintetico: 'Cotone misto sintetico'
+};
+
 export interface Fondo {
 	tipo: 'tinta_unita' | 'diviso' | 'fantasia';
 	/** 1 colore per tinta unita, 2 per diviso (sinistra, destra). Con la fantasia: colore di base. */
 	colori: Colore[];
 	fantasia?: Fantasia | null;
+	/** null o assente = sconosciuto. */
+	materiale?: Materiale | null;
 }
 
 export interface Fettuccia {
@@ -68,6 +88,8 @@ export interface Fettuccia {
 	tratto?: { da_mm: number; a_mm: number } | null;
 	/** Fettuccia con una fantasia: il motivo segue la direzione di ogni lato; i colori fanno da riserva. */
 	fantasia?: Fantasia | null;
+	/** null o assente = sconosciuto. */
+	materiale?: Materiale | null;
 }
 
 export interface Elemento {

@@ -1,4 +1,5 @@
 import { attuali, ordinaFazzolettoni, type GruppoConDati } from '#lib/supabase/dati.ts';
+import { avvisiDesign } from '#lib/design/render.ts';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -12,6 +13,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const gruppi = (data as unknown as GruppoConDati[]).map((g) => {
 		const ff = ordinaFazzolettoni(g.fazzolettoni);
 		const [attuale] = attuali(ff);
+		const dati = attuale?.rev?.dati;
+		// da rivedere: le note lasciate da chi l'ha inserito più i valori sconosciuti nel disegno.
+		// I colori stimati dal nome ("rosso") non contano: sono quasi tutti, e il nome è un dato.
+		const avvisi = [
+			...(dati?.da_rivedere ?? []),
+			...(dati?.design ? avvisiDesign(dati.design) : []).filter(
+				(a) => !a.startsWith('Colori stimati')
+			)
+		];
 		return {
 			id: g.id,
 			associazione: g.associazione,
@@ -21,8 +31,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			regione_slug: g.regione_slug,
 			attivo: g.attivo,
 			n: ff.length,
-			design: attuale?.rev?.dati.design ?? null,
-			daRivedere: !!attuale?.rev?.dati.da_rivedere?.length
+			design: dati?.design ?? null,
+			avvisi
 		};
 	});
 	gruppi.sort((a, b) => a.nome.localeCompare(b.nome, 'it', { numeric: true }));

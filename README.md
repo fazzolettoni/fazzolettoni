@@ -10,11 +10,19 @@ con una foto: da quella descrizione il sito disegna l'immagine, la scarica in SV
 mostra indossata in 3D. Chiunque si iscriva può aggiungere e correggere gruppi e fazzolettoni,
 come in una wiki: ogni modifica resta nello storico e si può ripristinare.
 
-## Contribuire
+## Come contribuire
 
-- **Dati** (gruppi, fazzolettoni, correzioni): direttamente sul sito, dopo l'iscrizione.
-- **Domande, idee, segnalazioni**: nelle Discussions e nelle Issues di questo repository, oppure
-  per email.
+Puoi contribuire al progetto in diversi modi:
+
+- **Nuove informazioni** (gruppi, fazzolettoni, correzioni): collegati a
+  https://fazzolettoni.vercel.app, e dopo la registrazione potrai creare nuove voci o modificare
+  quelle esistenti.
+- **Segnalazioni di bug o suggerimenti di nuove funzionalità**: usa le
+  [Issues](https://github.com/mikima/fazzolettoni/issues) per segnalare cose che non funzionano o
+  suggerire nuove funzionalità. Non usare le issue per domande tecniche o errori sui dati (colori
+  dei fazzolettoni, date, eccetera): per quelli usa le discussioni, vedi il prossimo punto.
+- **Segnalazioni sulle informazioni nella piattaforma, discussioni su come migliorarle,
+  domande**: usa le [Discussions](https://github.com/mikima/fazzolettoni/discussions).
 - **Codice**: le pull request sono benvenute. Le scelte di progetto sono in [SPEC.md](SPEC.md).
 
 ## Come è fatto
@@ -75,6 +83,7 @@ saltano. Chi ne ha bisogno per lo sviluppo può chiederli per email. Con i file 
 ```sh
 npm run seed:sicilia                                           # carica le schede siciliane
 npx tsx --env-file=.env.local scripts/indirizzi-sicilia.ts     # sede e zona (--scrivi per salvare)
+npx tsx --env-file=.env.local scripts/materiali-sicilia.ts     # tessuti di fondo e fettucce (idem)
 ```
 
 ## Messa online
@@ -104,5 +113,10 @@ pausa dopo una settimana di inattività.
 - Il portafazzolettone porta solo la sigla dell'associazione del gruppo; nomi e simboli delle
   associazioni appartengono alle rispettive associazioni.
 - Carattere Montserrat ExtraBold (`@fontsource/montserrat`), licenza SIL Open Font License 1.1.
-- I contenuti del sito (disegni e descrizioni) sono pubblicati con licenza
-  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.it).
+
+## Licenze
+
+- **Codice**: [EUPL 1.2](LICENSE) (European Union Public Licence), valida in tutte le lingue
+  dell'Unione, [italiano compreso](https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12).
+  Chi pubblica una versione modificata, anche solo come sito, ne deve condividere il codice.
+- **Contenuti** del sito (disegni e descrizioni): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.it).

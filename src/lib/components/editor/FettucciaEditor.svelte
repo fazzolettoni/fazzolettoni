@@ -2,6 +2,7 @@
 	import ColoreInput from './ColoreInput.svelte';
 	import MisuraCm from './MisuraCm.svelte';
 	import FantasiaEditor from './FantasiaEditor.svelte';
+	import MaterialeSelect from './MaterialeSelect.svelte';
 	import { ETICHETTE_LATI, LATI_PER_FORMA, nuovoColore } from '#lib/design/nuovo.ts';
 	import { DEFAULT, type Fettuccia, type Forma, type Lato } from '#lib/design/schema.ts';
 
@@ -94,6 +95,7 @@
 					segnaposto="0"
 				/>
 			{/if}
+			<MaterialeSelect bind:materiale={fettuccia.materiale} />
 		</div>
 
 		<fieldset>

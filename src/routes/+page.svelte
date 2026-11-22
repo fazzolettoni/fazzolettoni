@@ -46,7 +46,10 @@
 							· non più attivo{/if}{#if g.n > 1}
 							· {g.n} fazzolettoni{/if}</span
 					>
-					{#if g.daRivedere}<span class="rivedere">da rivedere</span>{/if}
+					{#if g.avvisi.length}<span class="rivedere" title={g.avvisi.join('\n')}
+							>da rivedere · {g.avvisi.length}
+							{g.avvisi.length === 1 ? 'avviso' : 'avvisi'}</span
+						>{/if}
 				</a>
 			</li>
 		{/each}

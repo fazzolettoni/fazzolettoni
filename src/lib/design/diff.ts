@@ -34,6 +34,7 @@ const NOMI: Record<string, string> = {
 	posizione: 'posizione',
 	scala: 'dimensione',
 	rotazione: 'rotazione',
+	materiale: 'tessuto',
 	data_inizio: 'inizio',
 	data_fine: 'fine',
 	anno: 'anno',

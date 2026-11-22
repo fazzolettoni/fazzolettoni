@@ -167,6 +167,10 @@ Prima bozza, da validare su 8-10 casi reali (§10, fase 0). Ogni campo può esse
 - Le fettucce funzionano come **livelli**: possono coprirsi a vicenda (es. Belpasso 2, la rossa copre la bianca agli angoli). Nell'editor andranno gestite come una lista di livelli riordinabili, come in un programma di grafica.
 - Casi coperti dalla raccolta siciliana: una sola fettuccia; 2-5 fettucce adiacenti (Rosolini 1, Gibellina 1); fettucce sovrapposte (Catania 19); bordo su tutti e quattro i lati (Belpasso 2); fettucce tricolori (Catania 13); strisce parziali (Augusta 4).
 
+### Materiale
+
+Fondo e fettucce hanno un campo `materiale` facoltativo, scelto da un elenco (cotone, raso, gabardine, lana, seta, nylon, poliestere, cotone misto sintetico; assente = non so). Per ora è solo un dato mostrato nella scheda; più avanti potrà dare al modello 3D lucentezza e trama. I fazzolettoni siciliani lo hanno dai campi «Stoffa» e «Tipo fettuccia» (`scripts/materiali-sicilia.ts`, che riempie solo i materiali mancanti).
+
 ### Fantasia
 
 ```jsonc
@@ -275,7 +279,7 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 | Immagini generate (SVG/PNG/3D) | **CC BY 4.0**                                                                                                      |
 | Dati strutturati               | CC BY 4.0                                                                                                          |
 | Foto e asset caricati          | **CC BY 4.0 obbligatoria**, con dichiarazione di chi carica ("ho i diritti" oppure "il gruppo ne autorizza l'uso") |
-| Codice                         | _Da decidere_ (MIT o AGPL)                                                                                         |
+| Codice                         | **EUPL 1.2** (file `LICENSE`): copyleft anche per l'uso come servizio online, valida in italiano                   |
 
 - Un fazzolettone senza asset è sempre interamente CC BY. Se un asset viene rimosso, il disegno resta valido senza di esso.
 - **Import da fonti esterne:** si importano solo _fatti_ (colori, struttura, date) più il link alla fonte. I testi di ScoutWiki (probabilmente CC BY-SA) **non si copiano**, perché imporrebbero BY-SA. Si riscrivono o si linkano.
@@ -353,5 +357,5 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 - [ ] **Posizione e livello sono accoppiati**: "adiacente" si riferisce alla fettuccia precedente _nella lista dei livelli_. Quando una fettuccia interna deve stare sopra una esterna (Siracusa 13, Palermo 6: "rossa su gialla"), bisogna usare distanze assolute. Valutare un riferimento esplicito ("adiacente a fettuccia X") o separare ordine di disegno e ordine dall'esterno.
 - [ ] **Chi può ripristinare**: oggi qualunque utente registrato (come in una wiki); sospensione e annullamento in blocco sono dei moderatori. Da confermare.
 - [ ] **URL del fazzolettone attuale**: oggi ogni fazzolettone ha uno slug di periodo (`dal-1996`, oppure `1` se le date sono ignote) e la pagina del gruppo mostra quello in uso. Quando gli si aggiunge la data di fine, l'URL cambia e il vecchio resta come redirect.
-- [ ] **Licenza del codice**: MIT o AGPL.
+- [x] **Licenza del codice**: EUPL 1.2.
 - [ ] **Nome e dominio del progetto.**

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Disegno from './Disegno.svelte';
-	import { renderDesign } from '#lib/design/render.ts';
+	import { avvisiDesign, renderDesign } from '#lib/design/render.ts';
+	import { testoMateriali } from '#lib/design/materiali.ts';
 	import { TILE } from '#lib/design/tile.svelte.ts';
 	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
 	import type { DatiFazzolettone } from '#lib/supabase/tipi.ts';
@@ -21,7 +22,8 @@
 		associazione?: string | null;
 	} = $props();
 
-	const avvisi = $derived(renderDesign(dati.design, { id: `${id}-av`, tile: TILE }).avvisi);
+	const avvisi = $derived(avvisiDesign(dati.design, TILE));
+	const materiali = $derived(testoMateriali(dati.design));
 	const quadrato = $derived(dati.design.forma === 'quadrato');
 </script>
 
@@ -68,6 +70,7 @@
 			{#each dati.da_rivedere as r}<li>{r}</li>{/each}
 		</ul>
 	{/if}
+	{#if materiali}<p class="materiali">{materiali}</p>{/if}
 	{#if dati.significato}<p class="significato">«{dati.significato}»</p>{/if}
 	{#each dati.note ?? [] as n}<p class="nota">{n}</p>{/each}
 
@@ -191,6 +194,11 @@
 		border-radius: 6px;
 		font-size: 0.85rem;
 		color: #7a4a06;
+	}
+	.materiali {
+		font-size: 0.85rem;
+		color: #555;
+		margin: 0.4rem 0;
 	}
 	.significato {
 		margin: 0;

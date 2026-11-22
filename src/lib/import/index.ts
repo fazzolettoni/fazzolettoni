@@ -11,6 +11,7 @@ import {
 } from './sicilia';
 import { MANUALI } from './sicilia-manuali';
 import { normalizzaDesign } from '../design/schema';
+import { completaMateriali } from './materiali';
 
 export interface SchedaSicilia {
 	gruppo: GruppoSicilia;
@@ -38,7 +39,7 @@ export const fonteSicilia = (g: Grezzi) => ({
 /** Converte e porta i lati alla forma giusta (es. "lati corti" di un quadrato). */
 export function converti(g: GruppoSicilia): Conversione {
 	const c = convertiGrezzo(g);
-	return { ...c, design: normalizzaDesign(c.design) };
+	return { ...c, design: completaMateriali(normalizzaDesign(c.design), g.campi).design };
 }
 
 function convertiGrezzo(g: GruppoSicilia): Conversione {

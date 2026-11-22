@@ -3,6 +3,7 @@
 	import ColoreInput from './ColoreInput.svelte';
 	import ElementoEditor from './ElementoEditor.svelte';
 	import LivelliFettucce from './LivelliFettucce.svelte';
+	import MaterialeSelect from './MaterialeSelect.svelte';
 	import { nuovoColore, nuovoElemento } from '#lib/design/nuovo.ts';
 	import type { Faccia, Fondo, Forma } from '#lib/design/schema.ts';
 
@@ -70,6 +71,7 @@
 			>+ colore</button
 		>
 	{/if}
+	<MaterialeSelect bind:materiale={faccia.fondo.materiale} />
 </section>
 
 <section>

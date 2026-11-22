@@ -1,6 +1,7 @@
 <script lang="ts">
 	import favicon from '#lib/assets/favicon.svg';
 	import { page } from '$app/state';
+	import { DISCUSSIONI } from '#lib/progetto.ts';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
@@ -14,6 +15,7 @@
 	<nav class="barra-sito">
 		<a class="marchio" href="/">Fazzolettoni</a>
 		<a href="/progetto">Il progetto</a>
+		<a href={DISCUSSIONI} target="_blank" rel="noreferrer">Discuti</a>
 		<span class="spazio"></span>
 		{#if data.profilo}
 			<a href="/nuovo-gruppo">Nuovo gruppo</a>
