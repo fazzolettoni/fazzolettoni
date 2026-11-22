@@ -15,7 +15,7 @@ Schema parametrico e renderer SVG, provati su 12 casi reali (AGESCI Sicilia e Sc
 - `src/routes/+page.svelte`: galleria con editor JSON live
 - `src/routes/editor/`: editor visuale (`/editor`, oppure `/editor?da=<id-esempio>`), con anteprima live, fettucce come livelli riordinabili, bozza salvata nel browser
 - `src/lib/components/editor/`: componenti dell'editor (colore, misura in cm, fettuccia, livelli, elementi, faccia)
-- `scripts/sicilia/estrai.py` → `data/sicilia/grezzi.json` → `src/lib/import/`: import della raccolta AGESCI Sicilia, visibile in `/sicilia` (dati per il PoC privato, non pubblicare)
+- `scripts/sicilia/estrai.py` → `data/sicilia/grezzi.json` → `src/lib/import/`: import della raccolta AGESCI Sicilia, visibile in `/sicilia`
 
 ## Backend (Supabase)
 
@@ -52,16 +52,16 @@ npm test         # test unitari
 npm run check    # controllo tipi
 ```
 
-I dati siciliani (`data/sicilia/grezzi.json`) **non sono nel repository**, finché AGESCI Sicilia non dà il permesso. Senza quel file `/sicilia`, l'editor e i test non partono. Per generarlo:
+I file grezzi siciliani (`data/sicilia/grezzi.json`, `data/sicilia/indirizzi.tsv`) **non sono nel repository**: AGESCI Sicilia ha dato il permesso di pubblicare i dati nel sito, non di ridistribuire la loro tabella. Senza quei file `/sicilia` è vuota e alcuni test si saltano. Per generare `grezzi.json`:
 
 ```sh
 curl -sL -o /tmp/sicilia.html https://sicilia.agesci.it/fazzolettoni/
 python3 -I scripts/sicilia/estrai.py /tmp/sicilia.html data/sicilia/grezzi.json
 ```
 
-## Messa online (alpha)
+## Messa online
 
-Sito su Vercel, database su un progetto Supabase gratuito. Con `ALPHA_PASSWORD` impostata, tutto il sito chiede una password: i dati AGESCI Sicilia restano visibili solo a chi la conosce.
+Sito su Vercel, database su un progetto Supabase gratuito. Facoltativa: con `ALPHA_PASSWORD` impostata tutto il sito chiede una password (serviva per la alpha privata).
 
 1. **Supabase**: crea un progetto su supabase.com (regione Europa). Poi, da terminale:
    ```bash
@@ -69,7 +69,7 @@ Sito su Vercel, database su un progetto Supabase gratuito. Con `ALPHA_PASSWORD` 
    npx supabase link --project-ref <ref-del-progetto>
    npx supabase db push
    ```
-2. **Vercel**: importa il repository da vercel.com (accesso con GitHub) e imposta le variabili `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_PUBLISHABLE_KEY` e `ALPHA_PASSWORD` (Settings → Environment Variables). Ogni push su `main` pubblica una nuova versione.
+2. **Vercel**: importa il repository da vercel.com (accesso con GitHub) e imposta le variabili `PUBLIC_SUPABASE_URL` e `PUBLIC_SUPABASE_PUBLISHABLE_KEY` (Settings → Environment Variables). Ogni push su `main` pubblica una nuova versione.
 3. **Supabase → Authentication → URL Configuration**: _Site URL_ = l'indirizzo Vercel, e tra i _Redirect URLs_ `https://<indirizzo-vercel>/**`.
 4. **Dati Sicilia** (facoltativo): crea `.env.produzione` (ignorato da git) con `PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` del progetto online, poi:
    ```bash
@@ -77,10 +77,11 @@ Sito su Vercel, database su un progetto Supabase gratuito. Con `ALPHA_PASSWORD` 
    ```
 5. **Amministratore**: accedi al sito, poi `npx tsx --env-file=.env.produzione scripts/ruolo.ts <email> amministratore`.
 
-Le email di accesso del servizio integrato di Supabase arrivano solo agli indirizzi del team del progetto e con un limite orario basso: per aprire la alpha ad altri serve un SMTP proprio (es. Resend), da impostare in Authentication → Emails.
+Le email di accesso del servizio integrato di Supabase arrivano solo agli indirizzi del team del progetto e con un limite orario basso: per far iscrivere altre persone serve un SMTP proprio (es. Resend), da impostare in Authentication → Emails.
 
 ## Crediti
 
+- Dati dei fazzolettoni siciliani: Tabella curata da A.F. Scalini (Centro regionale studi e documentazione - Agesci Sicilia), https://sicilia.agesci.it/fazzolettoni/, pubblicati con il loro permesso.
 - Modello 3D del fazzolettone indossato: realizzato per il progetto (`static/modelli/fazzolettone.glb`). La texture originale del portafazzolettone, con il logo AGESCI, non viene usata.
 - Portafazzolettone: porta solo la sigla dell'associazione del gruppo; i nomi delle associazioni appartengono a loro.
 - Carattere Montserrat ExtraBold (pacchetto `@fontsource/montserrat`), licenza SIL Open Font License 1.1.

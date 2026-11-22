@@ -1,6 +1,6 @@
 /**
  * Schede importate dalla raccolta AGESCI Sicilia, pronte per la galleria.
- * Dati per il proof of concept privato: non pubblicare senza permesso (vedi SPEC §8).
+ * Pubblicate con il permesso di AGESCI Sicilia e la citazione concordata (vedi SPEC §8).
  */
 import {
 	convertiConRegole,
@@ -24,6 +24,10 @@ export interface Grezzi {
 	curatore: string;
 	righe: unknown[];
 }
+
+/** Citazione della fonte concordata con AGESCI Sicilia. */
+export const CITAZIONE_SICILIA =
+	'Tabella curata da A.F. Scalini (Centro regionale studi e documentazione - Agesci Sicilia)';
 
 export const fonteSicilia = (g: Grezzi) => ({
 	url: g.url,

@@ -287,8 +287,9 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 ### AGESCI Sicilia (proof of concept)
 
 - Si importano i dati strutturati della tabella, **senza foto**.
-- Il PoC resta **non pubblico** (in locale o con un deploy protetto da password) e viene mostrato al centro studi AGESCI Sicilia per chiedere il permesso.
-- Se lo danno, il PoC si apre. Altrimenti i dati importati si cancellano.
+- ✅ **Permesso ottenuto** (novembre 2026) dal Centro regionale studi e documentazione di AGESCI Sicilia: il sito è pubblico.
+- **Citazione concordata**, su ogni fazzolettone importato: «Tabella curata da A.F. Scalini (Centro regionale studi e documentazione - Agesci Sicilia)», con il link alla loro pagina. Aggiornata su tutti con `scripts/citazione-sicilia.ts` (una revisione nuova per fazzolettone, solo dove serviva).
+- Le sedi e le zone dei gruppi vengono dall'elenco gruppi AGESCI Sicilia (`scripts/indirizzi-sicilia.ts`).
 - ✅ Fatto (`/sicilia`): `scripts/sicilia/estrai.py` legge la pagina e salva `data/sicilia/grezzi.json`; `src/lib/import/` unisce e converte. 101 fazzolettoni: 79 convertiti senza dubbi, 30 descrizioni libere interpretate a mano (`sicilia-manuali.ts`, con nota visibile), 22 da rivedere.
 - **La pagina ha due tabelle** con gli stessi gruppi e valori a volte diversi: si uniscono campo per campo, "dettagli" come fonte principale, e i disaccordi diventano conflitti visibili (20 gruppi).
 - Identità del gruppo = associazione + nome, confermato dai dati: "Palermo 6" esiste sia AGESCI sia FSE, "Messina 1" e "Giarre 1" sia AGESCI sia CNGEI.
@@ -326,14 +327,14 @@ Gruppi e fazzolettoni hanno una tabella di revisioni **append-only**:
 ## 10. Roadmap
 
 - **Fase 0: schema e renderer.** ✅ Prima versione fatta (`src/lib/design/`, galleria in `/`). Schema TypeScript/JSON del `design`, renderer SVG, pagina di prova con 8-10 casi reali: Venezia 2, Rosolini 1, Gibellina 1, Belpasso 2, Solarino 8, Vicari 1, Augusta 4, Catania 19, Siracusa 14 (quadrato), Castellammare 1.
-- **Fase 1: PoC AGESCI Sicilia (privato).** Editor visuale ✅ prima versione (`/editor`). Import della tabella siciliana, pagine di gruppo e fazzolettone, editor con anteprima live, registrazione, revisioni e rollback, export SVG/PNG.
+- **Fase 1: PoC AGESCI Sicilia.** Editor visuale ✅ prima versione (`/editor`). Import della tabella siciliana, pagine di gruppo e fazzolettone, editor con anteprima live, registrazione, revisioni e rollback, export SVG/PNG.
   Backend ✅ prima versione, in locale con Docker:
   - accesso via email (magic link), profili con nome pubblico, ruoli;
   - revisioni append-only, diff leggibili, ripristino, URL stabili con redirect;
   - moderazione: sospensione, "annulla tutte le modifiche di un utente", ruoli;
   - le 101 schede siciliane caricate come revisioni "import";
   - `npm run verifica:permessi` controlla le regole di accesso.
-- **Fase 2: apertura.** Permesso da AGESCI Sicilia, deploy pubblico, asset e foto caricabili, ruoli di moderazione.
+- **Fase 2: apertura.** ✅ Permesso da AGESCI Sicilia, ✅ deploy pubblico, asset e foto caricabili, ruoli di moderazione.
 - **Fase 3: ScoutWiki.** Permesso, import AGESCI nazionale come bozze, gestione dei conflitti tra fonti.
 - **Dopo:** osservati speciali, dataset aperto scaricabile, altre associazioni, 3D.
 

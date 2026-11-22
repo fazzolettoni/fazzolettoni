@@ -5,7 +5,12 @@
  */
 import { createClient } from '@supabase/supabase-js';
 import grezzi from '../data/sicilia/grezzi.json' with { type: 'json' };
-import { fonteSicilia, schedeSicilia, type Grezzi } from '../src/lib/import/index';
+import {
+	CITAZIONE_SICILIA,
+	fonteSicilia,
+	schedeSicilia,
+	type Grezzi
+} from '../src/lib/import/index';
 import { vuoto } from '../src/lib/import/sicilia';
 import type { DatiFazzolettone, DatiGruppo } from '../src/lib/supabase/tipi';
 
@@ -43,7 +48,7 @@ for (const { gruppo: g, conversione: c } of SCHEDE_SICILIA) {
 			{
 				tipo: 'agesci-sicilia',
 				url: FONTE_SICILIA.url,
-				nota: `Tabella curata da ${FONTE_SICILIA.curatore}`
+				nota: CITAZIONE_SICILIA
 			}
 		],
 		affidabilita: 'importato',
