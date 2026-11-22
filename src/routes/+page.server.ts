@@ -14,13 +14,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const ff = ordinaFazzolettoni(g.fazzolettoni);
 		const [attuale] = attuali(ff);
 		const dati = attuale?.rev?.dati;
-		// da rivedere: le note lasciate da chi l'ha inserito più i valori sconosciuti nel disegno.
-		// I colori stimati dal nome ("rosso") non contano: sono quasi tutti, e il nome è un dato.
+		// da rivedere: le note lasciate da chi l'ha inserito più tutto ciò che nel disegno è
+		// sconosciuto o stimato (anche i colori dedotti dal nome): invita a completare i dati.
 		const avvisi = [
 			...(dati?.da_rivedere ?? []),
-			...(dati?.design ? avvisiDesign(dati.design) : []).filter(
-				(a) => !a.startsWith('Colori stimati')
-			)
+			...(dati?.design ? avvisiDesign(dati.design) : [])
 		];
 		return {
 			id: g.id,
