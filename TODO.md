@@ -2,7 +2,7 @@
 
 Idee e lavori emersi finora, non ancora fatti. Le questioni di progetto ancora aperte sono in
 [SPEC.md §11](SPEC.md#11-questioni-aperte). Per proporre altro: le
-[Discussions](https://github.com/mikima/fazzolettoni/discussions).
+[Discussions](https://github.com/fazzolettoni/fazzolettoni/discussions).
 
 ## Per aprire il progetto a tutti
 

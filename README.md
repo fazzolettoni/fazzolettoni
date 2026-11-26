@@ -18,11 +18,11 @@ Puoi contribuire al progetto in diversi modi:
   https://fazzolettoni.vercel.app, e dopo la registrazione potrai creare nuove voci o modificare
   quelle esistenti.
 - **Segnalazioni di bug o suggerimenti di nuove funzionalità**: usa le
-  [Issues](https://github.com/mikima/fazzolettoni/issues) per segnalare cose che non funzionano o
+  [Issues](https://github.com/fazzolettoni/fazzolettoni/issues) per segnalare cose che non funzionano o
   suggerire nuove funzionalità. Non usare le issue per domande tecniche o errori sui dati (colori
   dei fazzolettoni, date, eccetera): per quelli usa le discussioni, vedi il prossimo punto.
 - **Segnalazioni sulle informazioni nella piattaforma, discussioni su come migliorarle,
-  domande**: usa le [Discussions](https://github.com/mikima/fazzolettoni/discussions).
+  domande**: usa le [Discussions](https://github.com/fazzolettoni/fazzolettoni/discussions).
 - **Codice**: le pull request sono benvenute. Le scelte di progetto sono in [SPEC.md](SPEC.md).
 
 ## Come è fatto
