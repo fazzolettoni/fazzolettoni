@@ -1,5 +1,8 @@
 import { attuali, ordinaFazzolettoni, type GruppoConDati } from '#lib/supabase/dati.ts';
 import { avvisiDesign } from '#lib/design/render.ts';
+import { normalizzaNomeColore, STIMA_COLORI } from '#lib/design/colori.ts';
+
+const ORDINE_COLORI = Object.keys(STIMA_COLORI);
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -20,8 +23,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 			...(dati?.da_rivedere ?? []),
 			...(dati?.design ? avvisiDesign(dati.design) : [])
 		];
+		// colore di fondo, per raggruppare e ordinare la griglia: l'ordine è quello di colori.ts
+		const c = dati?.design?.fronte.fondo.colori[0];
+		const nomeFondo = c?.nome ? normalizzaNomeColore(c.nome) : null;
+		const i = nomeFondo ? ORDINE_COLORI.indexOf(nomeFondo) : -1;
+		const fondo = {
+			nome: nomeFondo,
+			hex: c?.hex ?? (nomeFondo ? STIMA_COLORI[nomeFondo] : null) ?? null,
+			ordine: i < 0 ? ORDINE_COLORI.length : i
+		};
 		return {
 			id: g.id,
+			fondo,
 			associazione: g.associazione,
 			nome: g.nome,
 			slug: g.slug,

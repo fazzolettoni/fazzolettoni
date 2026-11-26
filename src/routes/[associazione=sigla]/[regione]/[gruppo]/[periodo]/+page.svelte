@@ -31,9 +31,8 @@
 	{/if}
 	<article>
 		<SchedaFazzolettone
-			{dati}
+			dati={{ ...dati, data_inizio: f.data_inizio, data_fine: f.data_fine }}
 			id="fz-{f.id}"
-			nomeFile="{g.slug}-{f.slug}"
 			associazione={g.associazione}
 		/>
 	</article>

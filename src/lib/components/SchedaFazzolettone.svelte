@@ -1,226 +1,269 @@
 <script lang="ts">
 	import Disegno from './Disegno.svelte';
-	import { avvisiDesign, renderDesign } from '#lib/design/render.ts';
-	import { testoMateriali } from '#lib/design/materiali.ts';
+	import { avvisiDesign } from '#lib/design/render.ts';
+	import { MATERIALI, type Colore } from '#lib/design/schema.ts';
 	import { TILE } from '#lib/design/tile.svelte.ts';
-	import { scaricaPng, scaricaSvg } from '#lib/design/export.ts';
+	import { testoPeriodo } from '#lib/supabase/dati.ts';
 	import type { DatiFazzolettone } from '#lib/supabase/tipi.ts';
 	import { linkSicuro, testoFonte } from '#lib/fonti.ts';
 
 	let {
 		dati,
 		id,
-		titolo,
-		nomeFile,
 		associazione = null
 	}: {
 		dati: DatiFazzolettone;
 		id: string;
-		titolo?: string;
-		nomeFile: string;
 		/** Sigla dell'associazione, per il portafazzolettone del 3D. */
 		associazione?: string | null;
 	} = $props();
 
-	const avvisi = $derived(avvisiDesign(dati.design, TILE));
-	const materiali = $derived(testoMateriali(dati.design));
-	const quadrato = $derived(dati.design.forma === 'quadrato');
+	const d = $derived(dati.design);
+	const avvisi = $derived([...(dati.da_rivedere ?? []), ...avvisiDesign(d, TILE)]);
+	const quadrato = $derived(d.forma === 'quadrato');
+	const misura = $derived(quadrato ? d.dimensioni_mm?.lato : d.dimensioni_mm?.cateto);
+	const fondo = $derived(d.fronte.fondo);
+	const incerto = $derived(
+		!dati.data_inizio || !!dati.data_inizio.circa || !!dati.data_fine?.circa
+	);
+	const periodo = $derived(
+		testoPeriodo({ data_inizio: dati.data_inizio ?? null, data_fine: dati.data_fine ?? null })
+	);
+	const nomeColore = (c: Colore) => c.nome ?? (c.hex ? c.hex : 'sconosciuto');
+	const FORME: Record<string, string> = { triangolo: 'Triangolo', quadrato: 'Quadrato' };
+	/** Unisce le parti presenti con « · »; una stringa vuota in testa fa iniziare con il separatore. */
+	const unisci = (parti: (string | number | null | undefined | false)[]) => {
+		const [primo, ...resto] = parti;
+		const t = resto.filter(Boolean).join(' · ');
+		if (primo === '') return t ? ` · ${t}` : '';
+		return [primo, ...resto].filter(Boolean).join(' · ');
+	};
+	const materiale = (m: string | null | undefined) =>
+		m ? MATERIALI[m as keyof typeof MATERIALI]?.toLowerCase() : null;
 </script>
 
-<section class="scheda">
-	{#if titolo}<h2>{titolo}</h2>{/if}
-	<div class="visuale">
-		<!-- three.js si scarica a parte, solo nelle pagine che lo mostrano -->
-		<div class="tre">
-			{#await import('./Fazzolettone3D.svelte') then m}
-				<m.default design={dati.design} {associazione} />
-			{/await}
+{#snippet colore(c: Colore)}<span
+		class="quadratino"
+		class:stimato={!c.hex || c.approssimato}
+		style:--c={c.hex ?? 'var(--inchiostro-2)'}
+	></span>{nomeColore(c)}{/snippet}
+
+<div class="corpo">
+	<div class="immagini">
+		<figure class="tre">
+			<figcaption class="etichetta">Modello 3D · indossato</figcaption>
+			<!-- three.js si scarica a parte, solo nelle pagine che lo mostrano -->
+			<div class="riquadro">
+				{#await import('./Fazzolettone3D.svelte') then m}
+					<m.default design={d} {associazione} />
+				{/await}
+			</div>
 			<span class="aiuto">trascina per ruotare · rotella per lo zoom</span>
-		</div>
-		<div class="facce" class:quadrato>
-			<figure class="fronte">
-				<Disegno design={dati.design} id="{id}-f" />
-				<figcaption>fronte, steso</figcaption>
-			</figure>
-			<figure class="retro">
-				<Disegno design={dati.design} faccia="retro" id="{id}-r" />
-				<figcaption>retro</figcaption>
-			</figure>
-		</div>
+		</figure>
+		<figure class="fronte" class:quadrato>
+			<figcaption class="etichetta">Fronte, steso</figcaption>
+			<div class="riquadro"><Disegno design={d} id="{id}-f" /></div>
+			<p class="nota-disegno">
+				Disegno generato dai parametri della scheda, scaricabile in SVG e PNG.
+			</p>
+		</figure>
 	</div>
 
-	<div class="azioni">
-		<button
-			type="button"
-			onclick={() => scaricaSvg(renderDesign(dati.design, { id: 'x', tile: TILE }).svg, nomeFile)}
-			>SVG</button
-		>
-		<button
-			type="button"
-			onclick={() => scaricaPng(renderDesign(dati.design, { id: 'x', tile: TILE }).svg, nomeFile)}
-			>PNG</button
-		>
-		{#if dati.affidabilita === 'importato'}<span class="et">importato</span>{/if}
-		{#if avvisi.length}<span class="et arancio" title={avvisi.join('\n')}>disegno approssimato</span
-			>{/if}
+	<div class="dati">
+		{#if dati.significato}<blockquote>«{dati.significato}»</blockquote>{/if}
+		<dl>
+			<dt class="etichetta">Forma</dt>
+			<dd>{unisci([FORME[d.forma ?? ''] ?? 'Sconosciuta', misura && `${misura / 10} cm`])}</dd>
+			<dt class="etichetta">Fondo</dt>
+			<dd>
+				{#each fondo.colori as c, i}{#if i}{' / '}{/if}{@render colore(c)}{/each}{unisci([
+					'',
+					fondo.tipo === 'fantasia' &&
+						`fantasia${fondo.fantasia?.descrizione ? ` (${fondo.fantasia.descrizione})` : ''}`,
+					materiale(fondo.materiale)
+				])}
+			</dd>
+			<dt class="etichetta">Fettucce</dt>
+			<dd>
+				{#each d.fronte.fettucce as f, i}{#if i}<br
+						/>{/if}{#each f.colori as c, j}{#if j}{' + '}{/if}{@render colore(c)}{/each}{unisci([
+						'',
+						f.larghezza_mm && `${f.larghezza_mm / 10} cm`,
+						materiale(f.materiale)
+					])}{:else}nessuna{/each}
+			</dd>
+			<dt class="etichetta">Periodo</dt>
+			<dd class:incerto>
+				{periodo}{#if incerto}<span class="nota">{' · date incerte'}</span>{/if}
+			</dd>
+			{#if dati.fonti?.length}
+				<dt class="etichetta">{dati.fonti.length > 1 ? 'Fonti' : 'Fonte'}</dt>
+				<dd>
+					{#each dati.fonti as f, i}{#if i}<br />{/if}{@const link = linkSicuro(f.url)}{#if link}<a
+								href={link}
+								target="_blank"
+								rel="noreferrer nofollow">{testoFonte(f)}</a
+							>{:else}{testoFonte(f)}{/if}{/each}
+				</dd>
+			{/if}
+			{#if dati.affidabilita === 'importato'}
+				<dt class="etichetta">Dati</dt>
+				<dd>importati da un archivio esistente</dd>
+			{/if}
+		</dl>
+
+		{#each dati.note ?? [] as n}<p class="nota-testo">{n}</p>{/each}
+
+		{#if avvisi.length}
+			<div class="rivedere">
+				<p class="etichetta">
+					Da rivedere · {avvisi.length}
+					{avvisi.length === 1 ? 'avviso' : 'avvisi'}
+				</p>
+				<ul>
+					{#each avvisi as a}<li>{a}</li>{/each}
+				</ul>
+				<p class="invito">Se conosci questo fazzolettone puoi correggere la scheda.</p>
+			</div>
+		{/if}
+		<!-- I campi originali dell'import (dati_originali) restano nei dati ma non si mostrano:
+			non si possono modificare dall'interfaccia. -->
 	</div>
-
-	{#if dati.da_rivedere?.length}
-		<ul class="rivedi">
-			{#each dati.da_rivedere as r}<li>{r}</li>{/each}
-		</ul>
-	{/if}
-	{#if materiali}<p class="materiali">{materiali}</p>{/if}
-	{#if dati.significato}<p class="significato">«{dati.significato}»</p>{/if}
-	{#each dati.note ?? [] as n}<p class="nota">{n}</p>{/each}
-
-	{#if dati.fonti?.length}
-		<p class="fonti">
-			{dati.fonti.length > 1 ? 'Fonti' : 'Fonte'}:
-			{#each dati.fonti as f, i}{#if i};
-				{/if}{@const link = linkSicuro(f.url)}{#if link}<a
-						href={link}
-						target="_blank"
-						rel="noreferrer nofollow">{testoFonte(f)}</a
-					>{:else}{testoFonte(f)}{/if}{/each}
-		</p>
-	{/if}
-
-	<!-- I campi originali dell'import (dati_originali) restano nei dati ma non si mostrano:
-		non si possono modificare dall'interfaccia. -->
-	{#if avvisi.length}
-		<details>
-			<summary>Cosa è approssimato nel disegno</summary>
-			<ul class="avvisi">
-				{#each avvisi as a}<li>{a}</li>{/each}
-			</ul>
-		</details>
-	{/if}
-</section>
+</div>
 
 <style>
-	.visuale {
+	.corpo {
 		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-		gap: 1rem;
-		align-items: center;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 24px;
 	}
-	@media (max-width: 700px) {
-		.visuale {
-			grid-template-columns: 1fr;
+	.immagini {
+		grid-column: 1 / 8;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+	.dati {
+		grid-column: 8 / 13;
+	}
+	@media (max-width: 800px) {
+		.immagini,
+		.dati {
+			grid-column: 1 / -1;
 		}
-	}
-	.tre {
-		position: relative;
-		height: min(65vh, 520px);
-		background: #ece9e3;
-		border-radius: 10px;
-		overflow: hidden;
-	}
-	.aiuto {
-		position: absolute;
-		bottom: 0.4rem;
-		left: 0;
-		right: 0;
-		text-align: center;
-		font-size: 0.7rem;
-		color: #888;
-		pointer-events: none;
-	}
-	.scheda {
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
-	}
-	h2 {
-		margin: 0;
-		font-size: 1.05rem;
-	}
-	.facce {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		align-items: center;
 	}
 	figure {
 		margin: 0;
-		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.riquadro {
+		background: var(--carta);
+		position: relative;
+		overflow: hidden;
+	}
+	.tre .riquadro {
+		aspect-ratio: 4 / 3;
+	}
+	.aiuto {
+		font-size: 12px;
+		color: var(--inchiostro-2);
 	}
 	.fronte {
+		width: 50%;
+	}
+	.fronte .riquadro {
+		aspect-ratio: 16 / 10;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 16px;
+	}
+	.fronte .riquadro :global(.disegno) {
 		width: 100%;
 	}
-	.retro {
-		width: 45%;
-		opacity: 0.85;
+	.fronte.quadrato .riquadro {
+		aspect-ratio: 1;
 	}
-	.quadrato .fronte,
-	.quadrato .retro {
-		width: 60%;
-	}
-	figcaption {
-		font-size: 0.72rem;
-		color: #999;
-	}
-	.azioni {
-		display: flex;
-		gap: 0.4rem;
-		align-items: center;
-		flex-wrap: wrap;
-	}
-	.azioni button {
-		font: inherit;
-		font-size: 0.8rem;
-		padding: 0.2rem 0.6rem;
-		border: 1px solid #ccc;
-		background: #fff;
-		border-radius: 5px;
-		cursor: pointer;
-	}
-	.et {
-		font-size: 0.72rem;
-		padding: 0.05rem 0.5rem;
-		border-radius: 999px;
-		background: #eee;
-		color: #555;
-	}
-	.et.arancio {
-		background: #fff1d6;
-		color: #8a5408;
-	}
-	.rivedi {
+	.nota-disegno {
 		margin: 0;
-		padding: 0.4rem 0.6rem 0.4rem 1.4rem;
-		background: #fff8ea;
-		border-radius: 6px;
-		font-size: 0.85rem;
-		color: #7a4a06;
+		font-size: 12px;
+		color: var(--inchiostro-2);
 	}
-	.materiali {
-		font-size: 0.85rem;
-		color: #555;
-		margin: 0.4rem 0;
+	@media (max-width: 800px) {
+		.fronte {
+			width: 100%;
+		}
 	}
-	.significato {
-		margin: 0;
+
+	blockquote {
+		margin: 0 0 28px;
+		font-size: 22px;
+		line-height: 1.35;
 		font-style: italic;
-		color: #555;
+		color: var(--testo-2);
 	}
-	.nota,
-	.fonti {
+	dl {
+		display: grid;
+		grid-template-columns: 110px 1fr;
 		margin: 0;
-		font-size: 0.85rem;
-		color: #555;
+		border-top: 1px solid var(--inchiostro);
 	}
-	.fonti a {
-		color: #2a5db0;
+	dt,
+	dd {
+		margin: 0;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--filo);
 	}
-	details summary {
-		font-size: 0.85rem;
-		color: #666;
-		cursor: pointer;
+	dt {
+		padding-top: 13px;
 	}
-	.avvisi {
-		font-size: 0.8rem;
-		color: #555;
+	dd {
+		font-size: 15px;
+	}
+	.quadratino {
+		display: inline-block;
+		width: 11px;
+		height: 11px;
+		border: 1px solid var(--inchiostro);
+		background: var(--c);
+		vertical-align: -1px;
+		margin-right: 5px;
+		box-sizing: border-box;
+	}
+	.quadratino.stimato {
+		background: repeating-linear-gradient(45deg, var(--c) 0 2px, transparent 2px 5px);
+		border-style: dashed;
+	}
+	dd.incerto {
+		color: var(--ocra);
+		text-decoration: underline dashed;
+		text-underline-offset: 4px;
+	}
+	.nota-testo {
+		font-size: 14px;
+		color: var(--testo-2);
+		margin: 16px 0 0;
+	}
+	.rivedere {
+		margin-top: 28px;
+		border: 1px dashed var(--ocra);
+		padding: 14px 16px;
+		color: var(--ocra);
+	}
+	.rivedere .etichetta {
+		color: var(--ocra);
+		margin: 0;
+	}
+	.rivedere ul {
+		margin: 8px 0;
+		padding-left: 18px;
+		font-size: 14px;
+		color: var(--testo-2);
+	}
+	.invito {
+		margin: 0;
+		font-size: 13px;
 	}
 </style>
