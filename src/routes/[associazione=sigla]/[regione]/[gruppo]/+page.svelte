@@ -88,7 +88,11 @@
 	{/if}
 
 	<p class="aggiungi">
-		<a href="/editor?gruppo={g.id}">+ Aggiungi un altro fazzolettone</a> (per esempio uno usato in passato)
+		{#if g.fazzolettoni.length}
+			<a href="/editor?gruppo={g.id}">+ Aggiungi un altro fazzolettone</a> (per esempio uno usato in passato)
+		{:else}
+			<a href="/editor?gruppo={g.id}">+ Aggiungi un fazzolettone</a>
+		{/if}
 	</p>
 </main>
 
